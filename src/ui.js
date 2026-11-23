@@ -150,7 +150,7 @@
       h += '</div>';
     }
     var lw = lastWeight(), nv = nextVac(), tr = activeTreat(), pend = live('pendiente').filter(function (x) { return !x.d.hecho; });
-    h += '<div class="tiles"><div class="tile" data-act="go" data-v="peso"><p class="lbl">Peso' + (lw ? ' · ' + fd(lw.w.fecha) : '') + '</p>' + (lw ? '<p class="big">' + kg(lw.w.g) + '<small>kg</small></p>' + pcChip(ageDays(lw.w.fecha), lw.w.g) + (lw.prev ? '<p class="mut sm">' + gainShort(lw.prev, lw.w) + '</p>' : '') : '<p class="mut">Sin pesadas</p>') + '</div>';
+    h += '<div class="tiles"><div class="tile" data-act="go" data-v="peso"><p class="lbl">Peso' + (lw ? ' · ' + fd(lw.w.fecha) : '') + '</p>' + (lw ? '<p class="big">' + kg(lw.w.g) + '<small>kg</small></p>' + pcChip(ageDays(lw.w.fecha), lw.w.g) + (function () { var st = weightStatus(); return st ? '<p class="sm stl s-' + st.level + '">' + (st.level === 'ok' ? 'Va muy bien' : esc(st.title)) + '</p>' : ''; })() : '<p class="mut">Sin pesadas</p>') + '</div>';
     h += '<div class="tile" data-act="go" data-v="vacunas"><p class="lbl">Vacunas</p>' + (nv ? '<p class="big">' + esc(nv.g.label) + '</p><p class="mut sm">' + (nv.cita ? 'Cita ' + fd(nv.cita.fecha) + (nv.cita.d.hora ? ' · ' + esc(nv.cita.d.hora) : '') : 'Desde el ' + fd(nv.due)) + '</p><p class="mut sm">' + plural(nv.g.vacs.length, 'vacuna', 'vacunas') + '</p>' : '<p class="mut">Al día</p>') + '</div>';
     h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Tratamiento</p>' + (tr.length ? tr.slice(0, 2).map(function (t) { return '<p class="strong">' + esc(t.d.nombre.replace(/\s*\(.*\)/, '')) + '</p><p class="mut sm">' + esc(t.d.pauta || '') + '</p>'; }).join('') : '<p class="mut sm">Ninguno ahora</p>') + '</div>';
     h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Pendiente</p>' + (pend.length ? '<p class="big">' + pend.length + '</p><p class="mut sm one">' + esc(pend[0].d.texto) + '</p>' : '<p class="mut sm">Nada pendiente</p>') + '</div></div>';
@@ -200,11 +200,55 @@
     return h + '</div>';
   }
 
+  /* ---------- valoración orientativa del peso (tablas OMS) ---------- */
+  function weightStatus() {
+    var lw = lastWeight(); if (!lw || !birth()) return null;
+    var L = lw.w, kind = L.birth || L.rec.tipo === 'consulta' ? 'consulta' : 'farmacia', ser = weights(kind).filter(function (x) { return x.fecha <= L.fecha && x.id !== L.id; });
+    var dL = ageDays(L.fecha), zL = R.zOf(dL, L.g / 1000), pL = R.percentile(dL, L.g / 1000);
+    // punto de comparación: el de la misma báscula más cercano a 2 semanas antes (mínimo 6 días)
+    var base = null; ser.forEach(function (x) { var g = days(x.fecha, L.fecha); if (g >= 6 && (!base || Math.abs(g - 14) < Math.abs(days(base.fecha, L.fecha) - 14))) base = x; });
+    var o = { p: pL, level: 'ok', lines: [], kind: kind };
+    if (base) {
+      var dB = ageDays(base.fecha), zB = R.zOf(dB, base.g / 1000), span = dL - dB, gain = L.g - base.g;
+      o.wk = Math.round(gain / span * 7);
+      o.expWk = Math.round((R.weightAt(dL, zB) - R.weightAt(dB, zB)) * 1000 / span * 7);
+      o.pB = R.percentile(dB, base.g / 1000); o.ratio = o.expWk > 0 ? o.wk / o.expWk : 1;
+      o.lines.push('Ha ganado <b>' + gain + ' g en ' + span + ' días</b>, unos ' + o.wk + ' g por semana. Siguiendo su curva se esperarían unos ' + o.expWk + ' g por semana.');
+      if (Math.abs(o.pB - pL) >= 5) o.lines.push('Ha pasado del percentil ' + o.pB + ' al <b>' + pL + '</b>' + (pL > o.pB ? ': va cogiendo ritmo.' : '.'));
+      if (gain < 0 && dL > 10) { o.level = 'watch'; o.title = 'Ha perdido algo de peso'; o.tip = 'Coméntalo con la pediatra.'; }
+      else if (o.ratio < 0.5 && dL > 14) { o.level = 'watch'; o.title = 'Gana menos de lo que marca su curva'; o.tip = 'Coméntalo con la pediatra en la próxima revisión.'; }
+    }
+    if (o.level === 'ok' && pL < 3) { o.level = 'watch'; o.title = 'Está por debajo de lo habitual'; o.tip = 'Coméntalo con la pediatra.'; }
+    else if (o.level === 'ok' && pL > 97) { o.level = 'info'; o.title = 'Está por encima de lo habitual'; o.tip = 'Suele no tener importancia; coméntalo en la revisión.'; }
+    if (!o.title) o.title = o.ratio >= 1.25 ? 'Va muy bien, ganando con ganas' : 'Va muy bien, siguiendo su curva';
+    o.lines.unshift('Pesa más que <b>' + pL + ' de cada 100</b> bebés de su edad.');
+    // recuperó el peso de nacimiento
+    var bw = perfil().peso;
+    if (bw) {
+      var rec = weights('farmacia').concat(weights('consulta')).filter(function (x) { return !x.birth && x.g >= bw; }).sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; })[0];
+      if (rec && ageDays(rec.fecha) <= 21) o.lines.push('Ya había recuperado su peso de nacimiento a los ' + ageDays(rec.fecha) + ' días (lo habitual es hacerlo antes de los 10–14).');
+    }
+    // hacia dónde va
+    for (var m = 1; m <= 24; m++) { var dm = addMonths(birth(), m); if (dm > today()) { o.proj = { m: m, fecha: dm, kg: R.weightAt(days(birth(), dm), zL) }; break; } }
+    o.z = zL; o.dL = dL; o.last = L;
+    return o;
+  }
+  function statusCard() {
+    var o = weightStatus(); if (!o) return '';
+    var ico = o.level === 'ok' ? ICON.check : '<b>!</b>';
+    return '<div class="card stat s-' + o.level + '"><div class="sth"><span class="sti">' + ico + '</span><div><p class="lbl">Cómo va</p><h3>' + esc(o.title) + '</h3></div></div>' +
+      '<div class="mini"><div><b>' + o.p + '</b><span>percentil' + (o.pB && o.pB !== o.p ? ' (antes ' + o.pB + ')' : '') + '</span></div>' +
+      (o.wk != null ? '<div><b>' + (o.wk > 0 ? '+' : '') + o.wk + ' g</b><span>por semana</span></div><div><b>' + o.expWk + ' g</b><span>pide su curva</span></div>' : '') + '</div>' +
+      '<ul class="why">' + o.lines.map(function (l) { return '<li>' + l + '</li>'; }).join('') + (o.tip ? '<li><b>' + esc(o.tip) + '</b></li>' : '') + '</ul>' +
+      (o.proj ? '<p class="proj">Si sigue en su curva, rondará los <b>' + dec(o.proj.kg.toFixed(1)) + ' kg</b> al cumplir ' + plural(o.proj.m, 'mes', 'meses') + ' (' + fd(o.proj.fecha) + ').</p>' : '') +
+      '<p class="mut sm">Orientativo, con las tablas de la OMS. Quien lo valora es la pediatra. <button class="link sm" data-act="pcInfo" data-p="' + o.p + '">¿Qué es el percentil?</button></p></div>';
+  }
+
   /* ---------- PESO ---------- */
   function vPeso() {
     var k = S.seg.peso, list = weights(k);
     var h = head('Peso', '', '<button class="add" data-act="' + (k === 'farmacia' ? 'addPeso' : 'addCons') + '" aria-label="Añadir">' + ICON.plus + '</button>');
-    h += '<div class="card chart">' + chart() + '<div class="legend"><span><i class="lf"></i>Farmacia</span><span><i class="lc"></i>Consulta</span><button data-act="pcInfo"><i class="lb"></i>Percentiles OMS <b>?</b></button></div></div>';
+    h += statusCard() + '<div class="card chart">' + chart() + '<div class="legend"><span><i class="lf"></i>Farmacia</span><span><i class="lc"></i>Consulta</span><span><i class="lb"></i>OMS</span><span><i class="lp"></i>Su curva</span></div></div>';
     h += seg('peso', [['farmacia', 'Farmacia'], ['consulta', 'Consulta']]);
     if (!list.length) return h + empty(k === 'farmacia' ? 'Apunta aquí la pesada semanal de la farmacia.' : 'Aquí van peso, talla y perímetro de las consultas.', k === 'farmacia' ? 'addPeso' : 'addCons', 'Añadir');
     return h + '<div class="list">' + list.slice().reverse().map(function (w, i, arr) {
@@ -237,7 +281,10 @@
     s += '<polygon points="' + poly(c3, c97) + '" class="b1"/><polygon points="' + poly(c15, c85) + '" class="b2"/><path d="' + line(c50) + '" class="p50"/>';
     [['P97', c97], ['P85', c85], ['P50', c50], ['P15', c15], ['P3', c3]].forEach(function (q) { var e = q[1][q[1].length - 1]; s += '<text x="' + (e[0] + 3) + '" y="' + (e[1] + 3) + '" class="pl">' + q[0] + '</text>'; });
     var ser = function (a, cls) { if (!a.length) return ''; var o = a.length > 1 ? '<path d="' + line(a.map(function (p) { return [X(p.x), Y(p.y)]; })) + '" class="sl ' + cls + '"/>' : ''; return o + a.map(function (p) { return '<circle cx="' + X(p.x).toFixed(1) + '" cy="' + Y(p.y).toFixed(1) + '" r="4.5" class="dot ' + cls + '"/>'; }).join(''); };
+    var st = weightStatus();
+    if (st && st.dL < xmax) { var pr = []; for (var dd = st.dL; dd <= xmax + 0.01; dd += step) pr.push([X(dd), Y(R.weightAt(dd, st.z))]); s += '<path d="' + line(pr) + '" class="proj"/>'; }
     s += ser(pcn, 'c') + ser(pf, 'f');
+    if (st) { var lx = X(st.dL), ly = Y(st.last.g / 1000), tx = 'P' + st.p, wdt = tx.length * 6 + 10; s += '<rect x="' + (lx - wdt / 2) + '" y="' + (ly - 26) + '" width="' + wdt + '" height="16" rx="8" class="lab"/><text x="' + lx + '" y="' + (ly - 14.5) + '" class="labt" text-anchor="middle">' + tx + '</text>'; }
     var td = ageDays(); if (td != null && td >= 0 && td <= xmax) s += '<line x1="' + X(td) + '" x2="' + X(td) + '" y1="' + T + '" y2="' + (H - B) + '" class="now"/>';
     return s + '</svg>';
   }

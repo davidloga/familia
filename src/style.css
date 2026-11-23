@@ -242,3 +242,26 @@ svg{display:block}
 .toast.out{opacity:0}
 .updbar{position:fixed;left:12px;right:12px;top:calc(var(--safe-t) + 8px);z-index:70;background:var(--sun);color:var(--ink);font-weight:800;padding:12px;border-radius:14px;box-shadow:0 4px 0 #E2AE00}
 .sync[hidden]{display:none}
+/* cómo va */
+.stat{border-width:2px;margin-bottom:10px}
+.stat.s-ok{border-color:#9FE0C2;background:linear-gradient(#F0FBF5,#fff 60%)}
+.stat.s-watch,.stat.s-info{border-color:#F5D27A;background:linear-gradient(#FFF8E1,#fff 60%)}
+.sth{display:flex;gap:12px;align-items:center}
+.sth h3{font-size:21px;margin:0}
+.sth .lbl{margin:0}
+.sti{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--ok);color:#fff;font-size:20px}
+.s-watch .sti,.s-info .sti{background:#E8A800}
+.sti svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0 8px}
+.mini div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:7px 8px;display:grid}
+.mini b{font-family:'Baloo 2',system-ui,sans-serif;font-size:21px;line-height:1.1}
+.mini span{font-size:11.5px;color:var(--mut);font-weight:700}
+.why{list-style:none;display:grid;gap:5px;margin:4px 0 8px;font-size:14px}
+.why li{position:relative;padding-left:14px}
+.why li::before{content:'';position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--blue)}
+.proj{background:var(--sun2);border-radius:12px;padding:8px 10px;font-size:14px;margin-bottom:8px}
+.stat .link{padding:0;font-size:13px}
+.wchart .proj{fill:none;stroke:#E8A800;stroke-width:1.6;stroke-dasharray:3 4;opacity:.8}
+.wchart .lab{fill:var(--ink)} .wchart .labt{fill:#fff;font-size:10px;font-weight:800;font-family:Nunito,system-ui,sans-serif}
+.legend .lp{border-radius:0;height:0;border-top:2px dashed #E8A800;width:14px;vertical-align:3px}
+.stl{font-weight:800;margin-top:2px}.stl.s-ok{color:var(--ok)}.stl.s-watch,.stl.s-info{color:#B07D00}
