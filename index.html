@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Noah APP 🦖</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F1F5FF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Noah APP">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/style.css?v=1">
+</head>
+<body>
+<div class="app" id="app"><div class="loading"><svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#DCE7FF" stroke-width="6"/><path d="M24 4a20 20 0 0 1 20 20" fill="none" stroke="#2F6BFF" stroke-width="6" stroke-linecap="round"/></svg>Cargando…</div></div>
+<div id="layer"></div>
+<nav class="nav" id="nav" hidden><div class="in">
+  <button data-v="home"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z"/></svg>Inicio</button>
+  <button data-v="citas"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Citas</button>
+  <button data-v="peso"><svg viewBox="0 0 24 24"><path d="M5 20h14l-1.5-11h-11z"/><circle cx="12" cy="6" r="2.5"/><path d="M12 13v3"/></svg>Peso</button>
+  <button data-v="vacunas"><svg viewBox="0 0 24 24"><path d="m14 4 6 6M17 7l-9.5 9.5-3 .5.5-3L14.5 4.5M11 8l2 2M8 11l2 2M4 20l3-3"/></svg>Vacunas</button>
+  <button data-v="diario"><svg viewBox="0 0 24 24"><path d="M6 3.5h11a1.5 1.5 0 0 1 1.5 1.5v15H7a2 2 0 0 1-2-2V4.5a1 1 0 0 1 1-1z"/><path d="M9 8h6M9 12h6"/></svg>Diario</button>
+</div></nav>
+<script src="config.js?v=1"></script>
+<script src="src/data.js?v=1"></script>
+<script src="src/google.js?v=1"></script>
+<script src="src/ui.js?v=1"></script>
+<script>
+/* Actualizaciones: si llega una versión nueva mientras usas la app, aparece un aviso para recargar */
+if('serviceWorker' in navigator&&location.protocol==='https:'){
+  var hadSW=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js').then(function(r){ r.update(); document.addEventListener('visibilitychange',function(){ if(!document.hidden) r.update(); }); });
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(!hadSW||document.getElementById('upd')) return;
+    var b=document.createElement('button'); b.id='upd'; b.className='updbar'; b.textContent='Versión nueva lista · Toca para actualizar';
+    b.onclick=function(){ location.reload(); }; document.body.appendChild(b);
+  });
+}
+</script>
+</body>
+</html>
