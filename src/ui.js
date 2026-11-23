@@ -34,7 +34,7 @@
   function ageText() {
     var n = ageDays(); if (n == null) return ''; if (n < 0) return 'Aún no ha nacido';
     if (n < 14) return plural(n, 'día', 'días');
-    if (n < 91) { var w = Math.floor(n / 7), r = n % 7; return plural(w, 'semana', 'semanas') + (r ? ' y ' + plural(r, 'día', 'días') : ''); }
+    if (n < 91) { var w = Math.floor(n / 7), r = n % 7; return plural(w, 'semanita', 'semanitas') + (r ? ' y ' + plural(r, 'día', 'días') : ''); }
     var b = parseD(birth()), t = new Date(), m = (t.getFullYear() - b.getFullYear()) * 12 + t.getMonth() - b.getMonth(); if (t.getDate() < b.getDate()) m--;
     var rest = days(addMonths(birth(), m), today());
     if (m < 24) return plural(m, 'mes', 'meses') + (rest ? ' y ' + plural(rest, 'día', 'días') : '');
@@ -101,7 +101,7 @@
   }
 
   /* ---------- piezas visuales ---------- */
-  var DINO = '<svg class="dino" viewBox="0 0 200 200" aria-hidden="true"><path d="M44 150c-20 2-34-8-38-20 14 6 28 4 40-4z" fill="#2F6BFF"/><path d="M118 44l10-16 8 18 14-12 2 20 16-6-6 18" fill="#14285E"/><ellipse cx="88" cy="128" rx="52" ry="42" fill="#2F6BFF"/><ellipse cx="128" cy="82" rx="46" ry="40" fill="#2F6BFF"/><ellipse cx="92" cy="136" rx="30" ry="26" fill="#DCE7FF"/><rect x="58" y="156" width="20" height="26" rx="10" fill="#2F6BFF"/><rect x="98" y="156" width="20" height="26" rx="10" fill="#2F6BFF"/><path d="M124 122q14 2 16 12" stroke="#2F6BFF" stroke-width="10" stroke-linecap="round" fill="none"/><circle cx="140" cy="74" r="12" fill="#fff"/><circle cx="143" cy="76" r="7" fill="#14285E"/><circle cx="145.5" cy="73" r="2.4" fill="#fff"/><circle cx="154" cy="96" r="7" fill="#FF9EB4" opacity=".75"/><path d="M128 100q12 10 26 2" stroke="#14285E" stroke-width="4" stroke-linecap="round" fill="none"/></svg>';
+  var DINO = '<svg class="dino" viewBox="0 0 200 200" aria-hidden="true"><g transform="translate(8 6)"><path d="M62 118 C40 124 22 138 10 162 C34 156 52 150 70 142 Z" fill="#2F6BFF"/><path d="M104 40 l7-16 9 12 8-16 9 13 8-14 7 16 z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="4" stroke-linejoin="round"/><ellipse cx="92" cy="118" rx="44" ry="42" fill="#2F6BFF"/><rect x="88" y="34" width="86" height="64" rx="30" fill="#2F6BFF"/><path d="M96 70 C90 84 88 96 92 108 L120 100 Z" fill="#2F6BFF"/><ellipse cx="98" cy="128" rx="26" ry="26" fill="#BFD3FF"/><rect x="66" y="146" width="22" height="34" rx="11" fill="#1F55E0"/><rect x="100" y="146" width="22" height="34" rx="11" fill="#2F6BFF"/><path d="M124 108 q12 4 12 14" stroke="#2F6BFF" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M118 80 Q146 92 172 78" stroke="#14285E" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M130 85 l4 7 4-6 M146 86 l4 7 4-7 M160 83 l3 6 4-7" fill="#fff" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/><circle cx="140" cy="56" r="11" fill="#fff"/><circle cx="143" cy="57" r="6.5" fill="#14285E"/><circle cx="145" cy="54.5" r="2.2" fill="#fff"/><circle cx="166" cy="48" r="2.6" fill="#14285E"/><circle cx="126" cy="72" r="6" fill="#FF9EB4" opacity=".8"/></g></svg>';
   var ICON = {
     cal: '<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
     phone: '<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
@@ -139,10 +139,11 @@
     var kind = last.birth || last.rec.tipo === 'consulta' ? 'consulta' : 'farmacia', ser = weights(kind), i = ser.findIndex(function (x) { return x.id === last.id; });
     return { w: last, prev: ser[i - 1] };
   }
+  function greet() { var h = new Date().getHours(), n = S.me && S.me.name ? ', ' + esc(S.me.name) : ''; return (h < 6 ? '¡Buenas noches' : h < 13 ? '¡Buenos días' : h < 21 ? '¡Buenas tardes' : '¡Buenas noches') + n + '!'; }
   function gainShort(a, b) { var g = b.g - a.g, d = days(a.fecha, b.fecha) || 0; return d >= 4 && g > 0 ? '+' + Math.round(g / d * 7) + ' g/semana' : signed(g) + ' en ' + plural(d, 'día', 'días'); }
   function vHome() {
     var p = perfil(), up = live('cita').filter(function (c) { return c.fecha >= today(); }).sort(cmpCita), next = up[0];
-    var h = '<div class="home"><section class="hero"><div class="hd">' + DINO + '</div><div class="hn"><h1>' + esc(p.nombre || 'Noah') + '</h1><p>' + esc(ageText() || 'Pon su fecha de nacimiento en Ajustes') + '</p></div><button class="gear" data-act="settings" aria-label="Ajustes">' + ICON.gear + '</button></section>';
+    var h = '<div class="home"><section class="hero"><div class="hd">' + DINO + '</div><div class="hn"><p class="hi">' + greet() + '</p><h1>' + esc(p.nombre || 'Noah') + '</h1><p>' + esc(ageText() || 'Pon su fecha de nacimiento en Ajustes') + '</p></div><button class="gear" data-act="settings" aria-label="Ajustes">' + ICON.gear + '</button></section>';
     if (!S.recs.length) return h + '<div class="card hi"><h3>Empieza aquí</h3><p class="mut">Pega el texto de importación y aparecerán los datos de Noah.</p><div class="row2"><button class="btn" data-act="import">Importar datos</button></div></div></div>';
     if (next) {
       h += '<div class="card nx" data-act="editCita" data-id="' + next.id + '"><div class="nxm">' + dateBox(next.fecha) + '<div class="lm"><p class="lbl">Próxima cita · ' + rel(next.fecha) + '</p><p class="strong">' + esc(next.d.titulo) + '</p><p class="mut sm">' + citaLine(next) + '</p></div><a class="ib" href="' + esc(calLink(next)) + '" target="_blank" rel="noopener" aria-label="Añadir a Calendar">' + ICON.cal + '</a></div>';
@@ -150,10 +151,10 @@
       h += '</div>';
     }
     var lw = lastWeight(), nv = nextVac(), tr = activeTreat(), pend = live('pendiente').filter(function (x) { return !x.d.hecho; });
-    h += '<div class="tiles"><div class="tile" data-act="go" data-v="peso"><p class="lbl">Peso' + (lw ? ' · ' + fd(lw.w.fecha) : '') + '</p>' + (lw ? '<p class="big">' + kg(lw.w.g) + '<small>kg</small></p>' + pcChip(ageDays(lw.w.fecha), lw.w.g) + (function () { var st = weightStatus(); return st ? '<p class="sm stl s-' + st.level + '">' + (st.level === 'ok' ? 'Va muy bien' : esc(st.title)) + '</p>' : ''; })() : '<p class="mut">Sin pesadas</p>') + '</div>';
+    h += '<div class="tiles"><div class="tile" data-act="go" data-v="peso"><p class="lbl">Peso' + (lw ? ' · ' + fd(lw.w.fecha) : '') + '</p>' + (lw ? '<p class="big">' + kg(lw.w.g) + '<small>kg</small></p>' + pcChip(ageDays(lw.w.fecha), lw.w.g) + (function () { var st = weightStatus(); return st ? '<p class="sm stl s-' + st.level + '">' + (st.level === 'ok' ? 'Va de lujo' : esc(st.title)) + '</p>' : ''; })() : '<p class="mut">Sin pesadas</p>') + '</div>';
     h += '<div class="tile" data-act="go" data-v="vacunas"><p class="lbl">Vacunas</p>' + (nv ? '<p class="big">' + esc(nv.g.label) + '</p><p class="mut sm">' + (nv.cita ? 'Cita ' + fd(nv.cita.fecha) + (nv.cita.d.hora ? ' · ' + esc(nv.cita.d.hora) : '') : 'Desde el ' + fd(nv.due)) + '</p><p class="mut sm">' + plural(nv.g.vacs.length, 'vacuna', 'vacunas') + '</p>' : '<p class="mut">Al día</p>') + '</div>';
     h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Tratamiento</p>' + (tr.length ? tr.slice(0, 2).map(function (t) { return '<p class="strong">' + esc(t.d.nombre.replace(/\s*\(.*\)/, '')) + '</p><p class="mut sm">' + esc(t.d.pauta || '') + '</p>'; }).join('') : '<p class="mut sm">Ninguno ahora</p>') + '</div>';
-    h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Pendiente</p>' + (pend.length ? '<p class="big">' + pend.length + '</p><p class="mut sm one">' + esc(pend[0].d.texto) + '</p>' : '<p class="mut sm">Nada pendiente</p>') + '</div></div>';
+    h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Pendiente</p>' + (pend.length ? '<p class="big">' + pend.length + '</p><p class="mut sm one">' + esc(pend[0].d.texto) + '</p>' : '<p class="mut sm">Nada pendiente, ¡qué gloria!</p>') + '</div></div>';
     h += '<div class="quick"><button data-act="addPeso">' + ICON.plus + 'Pesada</button><button data-act="newD" data-t="nota">' + ICON.plus + 'Nota</button><button data-act="addCita">' + ICON.plus + 'Cita</button></div></div>';
     return h;
   }
@@ -191,7 +192,7 @@
       }).join('') + '</div>';
     }
     var all = live('cita').sort(cmpCita), up = all.filter(function (c) { return c.fecha >= today(); }), past = all.filter(function (c) { return c.fecha < today(); }).reverse();
-    if (!all.length) return h + empty('No hay citas apuntadas.', 'addCita', 'Añadir cita') + '</div>';
+    if (!all.length) return h + empty('No hay citas apuntás todavía.', 'addCita', 'Añadir cita') + '</div>';
     h += up.length ? '<div class="list">' + up.map(function (c) { return citaRow(c); }).join('') + '</div>' : '<p class="mut pad">No hay citas próximas.</p>';
     if (past.length) {
       h += '<button class="link" data-act="togglePast">' + (S.showPast ? 'Ocultar' : 'Ver') + ' citas pasadas (' + past.length + ')</button>';
@@ -220,7 +221,7 @@
     }
     if (o.level === 'ok' && pL < 3) { o.level = 'watch'; o.title = 'Está por debajo de lo habitual'; o.tip = 'Coméntalo con la pediatra.'; }
     else if (o.level === 'ok' && pL > 97) { o.level = 'info'; o.title = 'Está por encima de lo habitual'; o.tip = 'Suele no tener importancia; coméntalo en la revisión.'; }
-    if (!o.title) o.title = o.ratio >= 1.25 ? 'Va muy bien, ganando con ganas' : 'Va muy bien, siguiendo su curva';
+    if (!o.title) o.title = o.ratio >= 1.25 ? 'Va de lujo, ganando con ganas' : 'Va de lujo, siguiendo su curva';
     o.lines.unshift('Pesa más que <b>' + pL + ' de cada 100</b> bebés de su edad.');
     // recuperó el peso de nacimiento
     var bw = perfil().peso;
@@ -322,7 +323,7 @@
     var f = S.seg.diario;
     var h = head('Diario', 'Tratamientos, notas y cosas pendientes', '<button class="add" data-act="addDiario" aria-label="Añadir">' + ICON.plus + '</button>') + seg('diario', [['todo', 'Todo'], ['tratamiento', 'Tratamientos'], ['nota', 'Notas'], ['pendiente', 'Pendientes']]) + '<div class="stack">';
     var list = S.recs.filter(function (r) { return !r.borrado && DTYPES[r.tipo] && (f === 'todo' || r.tipo === f); });
-    if (!list.length) return h + empty('Nada por aquí todavía.', 'addDiario', 'Añadir') + '</div>';
+    if (!list.length) return h + empty('Aquí no hay ná todavía.', 'addDiario', 'Añadir') + '</div>';
     list.sort(function (a, b) {
       var pa = a.tipo === 'pendiente' && !a.d.hecho, pb = b.tipo === 'pendiente' && !b.d.hecho; if (pa !== pb) return pa ? -1 : 1;
       return (b.fecha || '') < (a.fecha || '') ? -1 : (b.fecha || '') > (a.fecha || '') ? 1 : (b.creado < a.creado ? -1 : 1);
@@ -349,7 +350,7 @@
       '<div class="actions">' + (rec && rec.id && !opts.noDelete ? '<button type="button" class="btn ghost danger" data-act="del">Borrar</button>' : '') + '<button type="submit" class="btn">' + (opts.cta || 'Guardar') + '</button></div></form>');
     var f = layer.querySelector('form');
     f.onsubmit = function (e) { e.preventDefault(); var o = {}; new FormData(f).forEach(function (v, k) { o[k] = typeof v === 'string' ? v.trim() : v; }); o._all = new FormData(f).getAll('codes'); onSave(o); };
-    var del = f.querySelector('[data-act=del]'); if (del) del.onclick = function (e) { e.stopPropagation(); if (confirm('¿Borrar? También desaparecerá para tu pareja.')) remove(rec); };
+    var del = f.querySelector('[data-act=del]'); if (del) del.onclick = function (e) { e.stopPropagation(); if (confirm('¿Lo borramos? También desaparece pa tu pareja.')) remove(rec); };
   }
   function pedOpts() { return [['', '—']].concat(live('pediatra').map(function (p) { return [p.id, p.d.nombre + (p.d.centro ? ' · ' + p.d.centro : '')]; })); }
   function vacOpts() { return [['', 'No']].concat(R.VACCINES.map(function (g) { return [g.key, 'Vacunas de los ' + g.label]; })); }
@@ -360,21 +361,21 @@
     form(c.id ? 'Cita' : 'Nueva cita', fld('text', 'titulo', 'Qué', c.d.titulo, { ph: 'Revisión, vacunas…', req: 1 }) + '<div class="two">' + fld('date', 'fecha', 'Día', c.fecha, { req: 1 }) + fld('time', 'hora', 'Hora', c.d.hora) + '</div>' +
       fld('select', 'ped', 'Pediatra', c.d.ped, { opts: pedOpts() }) + fld('text', 'lugar', 'Lugar (si no es el de la pediatra)', c.d.lugar) + fld('select', 'vac', '¿Es de vacunas?', c.d.vac, { opts: vacOpts() }) + fld('area', 'notas', 'Notas', c.d.notas, { rows: 2 }), c.id ? c : null, function (o) {
       if (!need(o.titulo && o.fecha, 'Pon qué es y el día')) return;
-      save(Object.assign({}, c, { fecha: o.fecha, d: { titulo: o.titulo, hora: o.hora, ped: o.ped, lugar: o.lugar, vac: o.vac, notas: o.notas, dur: c.d.dur } }), 'Cita guardada');
+      save(Object.assign({}, c, { fecha: o.fecha, d: { titulo: o.titulo, hora: o.hora, ped: o.ped, lugar: o.lugar, vac: o.vac, notas: o.notas, dur: c.d.dur } }), '¡Cita apuntá!');
     });
   }
   function pedForm(p) {
     p = p || { tipo: 'pediatra', d: {} };
     form(p.id ? 'Pediatra' : 'Nueva pediatra', fld('text', 'nombre', 'Nombre', p.d.nombre, { req: 1 }) + fld('text', 'centro', 'Centro', p.d.centro) + fld('text', 'direccion', 'Dirección', p.d.direccion) +
       '<div class="two">' + fld('tel', 'tel', 'Teléfono', p.d.tel) + fld('text', 'web', 'Web', p.d.web) + '</div><div class="two">' + fld('tel', 'tel2', 'Otro teléfono', p.d.tel2) + fld('text', 'tel2Label', 'Para qué', p.d.tel2Label, { ph: 'Curas…' }) + '</div>' + fld('area', 'notas', 'Notas', p.d.notas, { rows: 2 }), p.id ? p : null, function (o) {
-      if (!need(o.nombre, 'Pon el nombre')) return; delete o._all; save(Object.assign({}, p, { d: o }), 'Guardado');
+      if (!need(o.nombre, 'Pon el nombre')) return; delete o._all; save(Object.assign({}, p, { d: o }), '¡Apuntao!');
     });
   }
   function pesoForm(r) {
     r = r || { tipo: 'peso', fecha: today(), d: {} };
     form(r.id ? 'Pesada de farmacia' : 'Pesada de farmacia', '<div class="two">' + fld('date', 'fecha', 'Día', r.fecha, { req: 1 }) + fld('text', 'g', 'Peso (g o kg)', r.d.g ? r.d.g : '', { im: 'decimal', ph: '3650', req: 1 }) + '</div>' + fld('text', 'lugar', 'Farmacia', r.d.lugar || lastVal('peso', 'lugar')) + fld('area', 'notas', 'Notas', r.d.notas, { rows: 2 }), r.id ? r : null, function (o) {
       var g = grams(o.g); if (!need(o.fecha && g && g > 1000 && g < 30000, 'Revisa el peso')) return;
-      save(Object.assign({}, r, { fecha: o.fecha, d: { g: g, lugar: o.lugar, notas: o.notas } }), 'Pesada guardada · ' + kg(g) + ' kg');
+      save(Object.assign({}, r, { fecha: o.fecha, d: { g: g, lugar: o.lugar, notas: o.notas } }), '¡Apuntá! ' + kg(g) + ' kg');
     });
   }
   function consForm(r) {
@@ -382,7 +383,7 @@
     form('Medidas de consulta', '<div class="two">' + fld('date', 'fecha', 'Día', r.fecha, { req: 1 }) + fld('select', 'ped', 'Pediatra', r.d.ped, { opts: pedOpts() }) + '</div><div class="three">' + fld('text', 'g', 'Peso (g o kg)', r.d.g || '', { im: 'decimal' }) + fld('text', 'talla', 'Talla (cm)', dec(r.d.talla), { im: 'decimal' }) + fld('text', 'pc', 'PC (cm)', dec(r.d.pc), { im: 'decimal' }) + '</div>' +
       fld('text', 'lugar', 'Lugar (si no hay pediatra)', r.d.lugar) + fld('area', 'notas', 'Notas', r.d.notas, { rows: 2 }), r.id ? r : null, function (o) {
       var g = grams(o.g); if (!need(o.fecha && (g || num(o.talla) || num(o.pc)), 'Pon al menos una medida')) return;
-      save(Object.assign({}, r, { fecha: o.fecha, d: { g: g, talla: num(o.talla), pc: num(o.pc), ped: o.ped, lugar: o.lugar, notas: o.notas } }), 'Medidas guardadas');
+      save(Object.assign({}, r, { fecha: o.fecha, d: { g: g, talla: num(o.talla), pc: num(o.pc), ped: o.ped, lugar: o.lugar, notas: o.notas } }), 'Medidas apuntás');
     });
   }
   function lastVal(t, k) { var l = live(t).filter(function (r) { return r.d[k]; }).sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; }).pop(); return l ? l.d[k] : ''; }
@@ -392,7 +393,7 @@
     var checks = g ? '<div class="f"><span>Qué se le ha puesto</span><div class="checks">' + g.vacs.map(function (x) { var l = R.vacLabel(x); return '<label class="ck"><input type="checkbox" name="codes" value="' + esc(l) + '"' + ((r.d.codes || []).indexOf(l) >= 0 ? ' checked' : '') + '><b>' + esc(l) + '</b> ' + esc(R.VNAMES[x.code]) + (x.rec ? ' <i>rec.</i>' : '') + '</label>'; }).join('') + '</div></div>' : fld('text', 'nombre', 'Vacuna', r.d.nombre, { req: 1 });
     form(g ? 'Vacunas de los ' + g.label : (r.id ? 'Vacuna' : 'Otra vacuna'), fld('date', 'fecha', 'Día', r.fecha, { req: 1 }) + checks + '<div class="two">' + fld('text', 'lote', 'Lote', r.d.lote) + fld('text', 'centro', 'Dónde', r.d.centro) + '</div>' + fld('area', 'notas', 'Notas', r.d.notas, { rows: 2 }), r.id ? r : null, function (o) {
       if (!need(o.fecha && (g ? o._all.length : o.nombre), g ? 'Marca qué se le ha puesto' : 'Pon el nombre de la vacuna')) return;
-      save(Object.assign({}, r, { fecha: o.fecha, d: { grupo: g ? key : '', nombre: g ? '' : o.nombre, codes: g ? o._all : [], lote: o.lote, centro: o.centro, notas: o.notas } }), 'Vacunas guardadas');
+      save(Object.assign({}, r, { fecha: o.fecha, d: { grupo: g ? key : '', nombre: g ? '' : o.nombre, codes: g ? o._all : [], lote: o.lote, centro: o.centro, notas: o.notas } }), '¡Vacunas puestas, valiente!');
     }, { cta: r.id ? 'Guardar' : 'Marcar como puesta' });
   }
   function vacGroupSheet(key) {
@@ -413,8 +414,8 @@
       : fld('date', 'fecha', 'Día', r.fecha) + fld('area', 'texto', 'Nota', r.d.texto, { rows: 5 });
     form(DTYPES[tipo], f, r.id ? r : null, function (o) {
       delete o._all;
-      if (tipo === 'tratamiento') { if (!need(o.nombre, 'Pon el medicamento')) return; save(Object.assign({}, r, { fecha: o.desde || r.fecha, d: o }), 'Guardado'); }
-      else { if (!need(o.texto, 'Escribe algo')) return; save(Object.assign({}, r, { fecha: o.fecha || r.fecha, d: Object.assign({}, r.d, { texto: o.texto, limite: o.limite }) }), 'Guardado'); }
+      if (tipo === 'tratamiento') { if (!need(o.nombre, 'Pon el medicamento')) return; save(Object.assign({}, r, { fecha: o.desde || r.fecha, d: o }), '¡Apuntao!'); }
+      else { if (!need(o.texto, 'Escribe algo')) return; save(Object.assign({}, r, { fecha: o.fecha || r.fecha, d: Object.assign({}, r.d, { texto: o.texto, limite: o.limite }) }), '¡Apuntao!'); }
     });
   }
   function perfilForm() {
@@ -423,7 +424,7 @@
       '<div class="three">' + fld('text', 'peso', 'Peso (g)', p.peso, { im: 'decimal' }) + fld('text', 'talla', 'Talla (cm)', dec(p.talla), { im: 'decimal' }) + fld('text', 'pc', 'PC (cm)', dec(p.pc), { im: 'decimal' }) + '</div>' +
       fld('text', 'eg', 'Semanas de gestación', p.eg, { ph: '38+2' }) + fld('text', 'alergias', 'Alergias', p.alergias) + fld('text', 'centroVacunas', 'Dónde se ponen las vacunas', p.centroVacunas), cur && cur.id ? cur : null, function (o) {
       delete o._all; o.peso = grams(o.peso); o.talla = num(o.talla); o.pc = num(o.pc);
-      save(Object.assign({}, cur || { tipo: 'perfil' }, { fecha: o.nacimiento, d: o }), 'Guardado');
+      save(Object.assign({}, cur || { tipo: 'perfil' }, { fecha: o.nacimiento, d: o }), '¡Apuntao!');
     }, { noDelete: true });
   }
 
@@ -502,7 +503,7 @@
     addVacExtra: function () { vacForm(''); }, editVac: function (d) { var r = byId(d.id); vacForm(r.d.grupo, r); },
     addDiario: function () { diarioForm(null, S.seg.diario !== 'todo' ? S.seg.diario : null); }, newD: function (d) { diarioForm(null, d.t); },
     editDiario: function (d) { diarioForm(byId(d.id)); },
-    toggleTodo: function (d) { var r = byId(d.id); save(Object.assign({}, r, { d: Object.assign({}, r.d, { hecho: !r.d.hecho }) }), r.d.hecho ? 'Pendiente otra vez' : '¡Hecho!'); },
+    toggleTodo: function (d) { var r = byId(d.id); save(Object.assign({}, r, { d: Object.assign({}, r.d, { hecho: !r.d.hecho }) }), r.d.hecho ? 'Pendiente otra vez' : '¡Hecho, una cosa menos!'); },
     pcInfo: function (d) {
       var p = d.p ? +d.p : null;
       openSheet('<div class="sheetf"><h2>¿Qué es el percentil?</h2>' + (p ? '<p class="pcbig">Percentil ' + p + '</p><p>De cada 100 bebés de su misma edad, <b>' + p + '</b> pesan menos que ' + esc(perfil().nombre || 'Noah') + ' y <b>' + (100 - p) + '</b> pesan más.</p>' : '<p>Compara su peso con el de bebés de su misma edad.</p>') +
@@ -535,7 +536,7 @@
   function screen(html) { nav.hidden = true; app.innerHTML = '<section class="welcome">' + DINO + html + '</section>'; }
 
   function boot() {
-    if (!API.token() && !S.me) return screen('<h1>Noah APP</h1><p>Citas, vacunas, peso y diario de Noah. Lo que apunta uno lo ve el otro.</p><button class="btn big" data-act="login">Entrar con Google</button><p class="mut sm">Cada uno entra con su propia cuenta.</p>');
+    if (!API.token() && !S.me) return screen('<h1>Noah APP</h1><p>Citas, vacunas, peso y diario de Noah. Lo que apunta uno, lo ve el otro al momento.</p><button class="btn big" data-act="login">Entrar con Google</button><p class="mut sm">Cada uno entra con su propia cuenta.</p>');
     if (!API.token()) { if (API.fileId() && S.recs.length) { S.ready = true; render(); } return reauth(); }
     var who = S.me ? Promise.resolve(S.me) : API.whoami();
     who.then(function (me) {
@@ -543,7 +544,7 @@
       if (API.fileId()) return start();
       return API.findFile().then(function (id) {
         if (id) return start();
-        screen('<h1>¡Hola, ' + esc(me.name) + '!</h1><p>Vamos a preparar el espacio de Noah.</p><button class="btn big" data-act="create">Empezar desde cero</button><button class="btn big ghost" data-act="joined">Me han invitado</button><p class="mut sm">Si tu pareja ya lo ha creado y te ha invitado, pulsa «Me han invitado» y elige «Noah APP · datos».</p>');
+        screen('<h1>¡Buenas, ' + esc(me.name) + '!</h1><p>Vamos a dejarlo todo listo pa Noah.</p><button class="btn big" data-act="create">Empezar desde cero</button><button class="btn big ghost" data-act="joined">Me han invitado</button><p class="mut sm">Si tu pareja ya lo ha creado y te ha invitado, pulsa «Me han invitado» y elige «Noah APP · datos».</p>');
       });
     }).catch(function (e) { if (e.auth) return reauth(); if (S.recs.length) { S.ready = true; render(); } toast(e.message); });
   }

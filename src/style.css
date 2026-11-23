@@ -20,7 +20,7 @@ svg{display:block}
 .home{display:grid;gap:10px}
 .hero{position:relative;display:flex;align-items:center;gap:12px;background:var(--blue);color:#fff;border-radius:24px;padding:10px 12px 10px 10px;overflow:hidden}
 .hd{flex:none;width:68px;height:68px;border-radius:50%;background:var(--sun);display:grid;place-items:center;overflow:hidden}
-.hd .dino{width:62px;margin-top:8px}
+.hd .dino{width:74px;margin:8px 0 0 4px}
 .hn{flex:1;min-width:0}
 .hero h1{font-size:32px;font-weight:800;letter-spacing:-.3px}
 .hero .hn p{font-size:15.5px;font-weight:700;opacity:.95}
@@ -225,7 +225,7 @@ svg{display:block}
 
 /* bienvenida */
 .welcome{min-height:82vh;display:grid;align-content:center;gap:12px;text-align:center;padding:0 10px}
-.welcome .dino{width:170px;margin:0 auto 4px;background:var(--sun);border-radius:50%;padding:14px}
+.welcome .dino{width:170px;margin:0 auto 4px;background:var(--sun);border-radius:50%;padding:10px 14px 18px}
 .welcome h1{font-size:40px;font-weight:800}
 .welcome p{font-size:16px;color:var(--mut);font-weight:600}
 
@@ -265,3 +265,4 @@ svg{display:block}
 .wchart .lab{fill:var(--ink)} .wchart .labt{fill:#fff;font-size:10px;font-weight:800;font-family:Nunito,system-ui,sans-serif}
 .legend .lp{border-radius:0;height:0;border-top:2px dashed #E8A800;width:14px;vertical-align:3px}
 .stl{font-weight:800;margin-top:2px}.stl.s-ok{color:var(--ok)}.stl.s-watch,.stl.s-info{color:#B07D00}
+.hero .hn .hi{font-size:13px;font-weight:700;opacity:.85;margin-bottom:-2px}
