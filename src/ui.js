@@ -132,33 +132,30 @@
   function by(r) { if (!r || !r.autor) return ''; return '<span class="by">' + esc(r.autor) + '</span>'; }
 
   /* ---------- INICIO ---------- */
+  function pcChip(d, g) { var pc = R.percentile(d, g / 1000); return pc ? '<button class="pc" data-act="pcInfo" data-p="' + pc + '">Percentil ' + pc + '<i>?</i></button>' : ''; }
+  function lastWeight() {
+    var all = weights('farmacia').concat(weights('consulta')).sort(function (a, b) { return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; }), last = all[all.length - 1];
+    if (!last) return null;
+    var kind = last.birth || last.rec.tipo === 'consulta' ? 'consulta' : 'farmacia', ser = weights(kind), i = ser.findIndex(function (x) { return x.id === last.id; });
+    return { w: last, prev: ser[i - 1] };
+  }
+  function gainShort(a, b) { var g = b.g - a.g, d = days(a.fecha, b.fecha) || 0; return d >= 4 && g > 0 ? '+' + Math.round(g / d * 7) + ' g/semana' : signed(g) + ' en ' + plural(d, 'día', 'días'); }
   function vHome() {
     var p = perfil(), up = live('cita').filter(function (c) { return c.fecha >= today(); }).sort(cmpCita), next = up[0];
-    var h = '<section class="hero"><button class="gear" data-act="settings" aria-label="Ajustes">' + ICON.gear + '</button>' + DINO +
-      '<h1>' + esc(p.nombre || 'Noah') + '</h1><p class="age">' + esc(ageText() || 'Añade la fecha de nacimiento en Ajustes') + '</p>' +
-      (p.alergias ? '<span class="tag">' + esc(p.alergias) + '</span>' : '') + '</section><div class="stack">';
-    if (!S.recs.length) h += '<div class="card hi"><h3>Empieza aquí</h3><p class="mut">Si tienes el texto de importación, pégalo y aparecerán los datos de Noah.</p><button class="btn" data-act="import">Importar datos</button></div>';
-    // próxima cita
-    if (next) h += '<div class="card" data-act="editCita" data-id="' + next.id + '"><div class="lbl">Próxima cita · ' + rel(next.fecha) + '</div>' + citaBody(next) +
-      '<div class="row2"><a class="btn sm" href="' + esc(calLink(next)) + '" target="_blank" rel="noopener" data-stop>' + ICON.cal + 'Añadir a Calendar</a>' +
-      (up.length > 1 ? '<button class="btn sm ghost" data-act="go" data-v="citas" data-stop>Ver ' + (up.length - 1) + ' más</button>' : '') + '</div></div>';
-    // peso
-    var all = weights('farmacia').concat(weights('consulta')).sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; }), last = all[all.length - 1];
-    if (last) {
-      var src = last.birth ? 'Nacimiento' : last.rec.tipo === 'peso' ? 'Farmacia' : 'Consulta', ser = weights(last.birth || last.rec.tipo === 'consulta' ? 'consulta' : 'farmacia'), i = ser.findIndex(function (x) { return x.id === last.id; }), prev = ser[i - 1];
-      var pc = R.percentile(ageDays(last.fecha), last.g / 1000);
-      h += '<div class="card" data-act="go" data-v="peso"><div class="lbl">Peso · ' + src + ' · ' + fd(last.fecha) + '</div><div class="big">' + kg(last.g) + '<small> kg</small>' + (pc ? '<span class="pc">P' + pc + '</span>' : '') + '</div>' +
-        (prev ? '<p class="mut">' + gainText(prev, last) + '</p>' : '') + '<div class="row2"><button class="btn sm" data-act="addPeso" data-stop>' + ICON.plus + 'Pesada farmacia</button></div></div>';
-    } else if (S.recs.length) h += '<div class="card"><div class="lbl">Peso</div><button class="btn sm" data-act="addPeso">' + ICON.plus + 'Primera pesada</button></div>';
-    // vacuna
-    var nv = nextVac();
-    if (nv && birth()) h += '<div class="card" data-act="go" data-v="vacunas"><div class="lbl">Próximas vacunas · ' + esc(nv.g.label) + '</div><p class="strong">Desde el ' + fd(nv.due, true) + (nv.cita ? ' · cita ' + fd(nv.cita.fecha) + (nv.cita.d.hora ? ' a las ' + esc(nv.cita.d.hora) : '') : '') + '</p><div class="chips">' + nv.g.vacs.map(vchip).join('') + '</div></div>';
-    // tratamientos
-    var tr = activeTreat();
-    if (tr.length) h += '<div class="card" data-act="go" data-v="diario"><div class="lbl">Tratamiento</div>' + tr.map(function (t) { return '<p class="strong">' + esc(t.d.nombre) + '</p><p class="mut">' + esc(t.d.pauta || '') + (t.d.hasta ? ' · hasta el ' + fd(t.d.hasta) : '') + '</p>'; }).join('') + '</div>';
-    var pend = live('pendiente').filter(function (x) { return !x.d.hecho; });
-    if (pend.length) h += '<div class="card" data-act="go" data-v="diario"><div class="lbl">Pendiente</div>' + pend.slice(0, 4).map(function (x) { return '<p>• ' + esc(x.d.texto) + '</p>'; }).join('') + '</div>';
-    return h + '</div>';
+    var h = '<div class="home"><section class="hero"><div class="hd">' + DINO + '</div><div class="hn"><h1>' + esc(p.nombre || 'Noah') + '</h1><p>' + esc(ageText() || 'Pon su fecha de nacimiento en Ajustes') + '</p></div><button class="gear" data-act="settings" aria-label="Ajustes">' + ICON.gear + '</button></section>';
+    if (!S.recs.length) return h + '<div class="card hi"><h3>Empieza aquí</h3><p class="mut">Pega el texto de importación y aparecerán los datos de Noah.</p><div class="row2"><button class="btn" data-act="import">Importar datos</button></div></div></div>';
+    if (next) {
+      h += '<div class="card nx" data-act="editCita" data-id="' + next.id + '"><div class="nxm">' + dateBox(next.fecha) + '<div class="lm"><p class="lbl">Próxima cita · ' + rel(next.fecha) + '</p><p class="strong">' + esc(next.d.titulo) + '</p><p class="mut sm">' + citaLine(next) + '</p></div><a class="ib" href="' + esc(calLink(next)) + '" target="_blank" rel="noopener" aria-label="Añadir a Calendar">' + ICON.cal + '</a></div>';
+      if (up.length > 1) h += '<div class="after" data-act="go" data-v="citas">' + up.slice(1, 3).map(function (c) { return '<span><b>' + fd(c.fecha) + '</b> ' + esc(c.d.titulo) + '</span>'; }).join('') + (up.length > 3 ? '<span class="more">+' + (up.length - 3) + '</span>' : '') + '</div>';
+      h += '</div>';
+    }
+    var lw = lastWeight(), nv = nextVac(), tr = activeTreat(), pend = live('pendiente').filter(function (x) { return !x.d.hecho; });
+    h += '<div class="tiles"><div class="tile" data-act="go" data-v="peso"><p class="lbl">Peso' + (lw ? ' · ' + fd(lw.w.fecha) : '') + '</p>' + (lw ? '<p class="big">' + kg(lw.w.g) + '<small>kg</small></p>' + pcChip(ageDays(lw.w.fecha), lw.w.g) + (lw.prev ? '<p class="mut sm">' + gainShort(lw.prev, lw.w) + '</p>' : '') : '<p class="mut">Sin pesadas</p>') + '</div>';
+    h += '<div class="tile" data-act="go" data-v="vacunas"><p class="lbl">Vacunas</p>' + (nv ? '<p class="big">' + esc(nv.g.label) + '</p><p class="mut sm">' + (nv.cita ? 'Cita ' + fd(nv.cita.fecha) + (nv.cita.d.hora ? ' · ' + esc(nv.cita.d.hora) : '') : 'Desde el ' + fd(nv.due)) + '</p><p class="mut sm">' + plural(nv.g.vacs.length, 'vacuna', 'vacunas') + '</p>' : '<p class="mut">Al día</p>') + '</div>';
+    h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Tratamiento</p>' + (tr.length ? tr.slice(0, 2).map(function (t) { return '<p class="strong">' + esc(t.d.nombre.replace(/\s*\(.*\)/, '')) + '</p><p class="mut sm">' + esc(t.d.pauta || '') + '</p>'; }).join('') : '<p class="mut sm">Ninguno ahora</p>') + '</div>';
+    h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Pendiente</p>' + (pend.length ? '<p class="big">' + pend.length + '</p><p class="mut sm one">' + esc(pend[0].d.texto) + '</p>' : '<p class="mut sm">Nada pendiente</p>') + '</div></div>';
+    h += '<div class="quick"><button data-act="addPeso">' + ICON.plus + 'Pesada</button><button data-act="newD" data-t="nota">' + ICON.plus + 'Nota</button><button data-act="addCita">' + ICON.plus + 'Cita</button></div></div>';
+    return h;
   }
   function gainText(a, b) {
     var g = b.g - a.g, d = days(a.fecha, b.fecha) || 0;
@@ -168,10 +165,14 @@
 
   /* ---------- CITAS y PEDIATRAS ---------- */
   function cmpCita(a, b) { var x = a.fecha + (a.d.hora || ''), y = b.fecha + (b.d.hora || ''); return x < y ? -1 : x > y ? 1 : 0; }
-  function citaBody(c) {
-    var ped = byId(c.d.ped), d = parseD(c.fecha);
-    return '<div class="cita"><div class="dt"><b>' + d.getDate() + '</b><span>' + MES[d.getMonth()] + '</span></div><div><p class="strong">' + esc(c.d.titulo) + '</p><p class="mut">' + DIA[d.getDay()] + (c.d.hora ? ' · ' + esc(c.d.hora) : '') +
-      (ped && !ped.borrado ? ' · ' + esc(ped.d.nombre) : '') + '</p>' + ((c.d.lugar || (ped && ped.d.centro)) ? '<p class="mut sm">' + esc(c.d.lugar || ped.d.centro) + '</p>' : '') + (c.d.notas ? '<p class="note">' + esc(c.d.notas) + '</p>' : '') + '</div></div>';
+  function dateBox(s) { var d = parseD(s); return '<div class="dt"><b>' + d.getDate() + '</b><span>' + MES[d.getMonth()] + '</span></div>'; }
+  function citaLine(c) {
+    var ped = byId(c.d.ped); ped = ped && !ped.borrado ? ped : null;
+    return [DIA[parseD(c.fecha).getDay()] + (c.d.hora ? ' ' + esc(c.d.hora) : ''), ped ? esc(ped.d.nombre) : '', c.d.lugar ? esc(c.d.lugar.split(',')[0]) : ped && ped.d.centro ? esc(ped.d.centro) : ''].filter(Boolean).join(' · ');
+  }
+  function citaRow(c, past) {
+    return '<div class="lrow' + (past ? ' past' : '') + '" data-act="editCita" data-id="' + c.id + '">' + dateBox(c.fecha) + '<div class="lm">' + (past ? '' : '<p class="lbl">' + rel(c.fecha) + '</p>') + '<p class="strong">' + esc(c.d.titulo) + '</p><p class="mut sm">' + citaLine(c) + '</p>' + (c.d.notas ? '<p class="mut sm">' + esc(c.d.notas) + '</p>' : '') + '</div>' +
+      (past ? '' : '<a class="ib" href="' + esc(calLink(c)) + '" target="_blank" rel="noopener" aria-label="Añadir a Calendar">' + ICON.cal + '</a>') + '</div>';
   }
   function vCitas() {
     var h = head('Citas', '', '<button class="add" data-act="' + (S.seg.citas === 'citas' ? 'addCita' : 'addPed') + '" aria-label="Añadir">' + ICON.plus + '</button>') + seg('citas', [['citas', 'Citas'], ['peds', 'Pediatras']]) + '<div class="stack">';
@@ -191,35 +192,32 @@
     }
     var all = live('cita').sort(cmpCita), up = all.filter(function (c) { return c.fecha >= today(); }), past = all.filter(function (c) { return c.fecha < today(); }).reverse();
     if (!all.length) return h + empty('No hay citas apuntadas.', 'addCita', 'Añadir cita') + '</div>';
-    h += up.length ? up.map(function (c) {
-      return '<div class="card" data-act="editCita" data-id="' + c.id + '"><div class="lbl">' + rel(c.fecha) + '</div>' + citaBody(c) + '<div class="row2"><a class="btn sm" href="' + esc(calLink(c)) + '" target="_blank" rel="noopener" data-stop>' + ICON.cal + 'Añadir a Calendar</a></div></div>';
-    }).join('') : '<p class="mut pad">No hay citas próximas.</p>';
+    h += up.length ? '<div class="list">' + up.map(function (c) { return citaRow(c); }).join('') + '</div>' : '<p class="mut pad">No hay citas próximas.</p>';
     if (past.length) {
       h += '<button class="link" data-act="togglePast">' + (S.showPast ? 'Ocultar' : 'Ver') + ' citas pasadas (' + past.length + ')</button>';
-      if (S.showPast) h += past.map(function (c) { return '<div class="card past" data-act="editCita" data-id="' + c.id + '">' + citaBody(c) + '</div>'; }).join('');
+      if (S.showPast) h += '<div class="list">' + past.map(function (c) { return citaRow(c, true); }).join('') + '</div>';
     }
     return h + '</div>';
   }
 
   /* ---------- PESO ---------- */
   function vPeso() {
-    var k = S.seg.peso, list = weights(k), all = weights('farmacia').concat(weights('consulta'));
-    var h = head('Peso', 'Farmacia y consultas por separado', '<button class="add" data-act="' + (k === 'farmacia' ? 'addPeso' : 'addCons') + '" aria-label="Añadir">' + ICON.plus + '</button>');
-    h += '<div class="card chart">' + chart() + '<div class="legend"><span><i class="lf"></i>Farmacia</span><span><i class="lc"></i>Consulta</span><span><i class="lb"></i>OMS P3–P97</span></div></div>';
-    h += seg('peso', [['farmacia', 'Farmacia'], ['consulta', 'Consulta']]) + '<div class="stack">';
-    if (!list.length) return h + empty(k === 'farmacia' ? 'Apunta aquí la pesada semanal de la farmacia.' : 'Aquí van peso, talla y perímetro de las consultas.', k === 'farmacia' ? 'addPeso' : 'addCons', 'Añadir') + '</div>';
-    h += list.slice().reverse().map(function (w, i, arr) {
-      var prev = arr[i + 1], pc = R.percentile(ageDays(w.fecha), w.g / 1000), r = w.rec, d = r ? r.d : perfil();
-      var meas = k === 'consulta' ? [d.talla ? 'Talla ' + dec(d.talla) + ' cm' : '', d.pc ? 'PC ' + dec(d.pc) + ' cm' : ''].filter(Boolean).join(' · ') : '';
-      var where = w.birth ? 'Nacimiento' : (r.d.ped ? pedName(r.d.ped) : '') || r.d.lugar || '';
-      return '<div class="card wrow" ' + (r ? 'data-act="' + (k === 'farmacia' ? 'editPeso' : 'editCons') + '" data-id="' + r.id + '"' : 'data-act="perfil"') + '><div class="wl"><p class="lbl">' + fd(w.fecha, true) + (ageDays(w.fecha) != null ? ' · ' + plural(ageDays(w.fecha), 'día', 'días') : '') + '</p><p class="big sm">' + kg(w.g) + '<small> kg</small>' + (pc ? '<span class="pc">P' + pc + '</span>' : '') + '</p>' +
-        (meas ? '<p class="mut">' + meas + '</p>' : '') + (where ? '<p class="mut sm">' + esc(where) + '</p>' : '') + (r && r.d.notas ? '<p class="note">' + esc(r.d.notas) + '</p>' : '') + '</div>' +
-        (prev ? '<div class="gain ' + (w.g - prev.g >= 0 ? 'up' : 'dn') + '">' + signed(w.g - prev.g) + '<small>' + plural(days(prev.fecha, w.fecha), 'día', 'días') + '</small></div>' : '') + '</div>';
-    }).join('');
-    return h + '<p class="foot">Curvas OMS de peso para niños. Es orientativo: la valoración la hace la pediatra.</p></div>';
+    var k = S.seg.peso, list = weights(k);
+    var h = head('Peso', '', '<button class="add" data-act="' + (k === 'farmacia' ? 'addPeso' : 'addCons') + '" aria-label="Añadir">' + ICON.plus + '</button>');
+    h += '<div class="card chart">' + chart() + '<div class="legend"><span><i class="lf"></i>Farmacia</span><span><i class="lc"></i>Consulta</span><button data-act="pcInfo"><i class="lb"></i>Percentiles OMS <b>?</b></button></div></div>';
+    h += seg('peso', [['farmacia', 'Farmacia'], ['consulta', 'Consulta']]);
+    if (!list.length) return h + empty(k === 'farmacia' ? 'Apunta aquí la pesada semanal de la farmacia.' : 'Aquí van peso, talla y perímetro de las consultas.', k === 'farmacia' ? 'addPeso' : 'addCons', 'Añadir');
+    return h + '<div class="list">' + list.slice().reverse().map(function (w, i, arr) {
+      var prev = arr[i + 1], r = w.rec, d = r ? r.d : perfil(), pc = R.percentile(ageDays(w.fecha), w.g / 1000);
+      var sub = [pc ? 'Percentil ' + pc : '', k === 'consulta' && d.talla ? dec(d.talla) + ' cm' : '', k === 'consulta' && d.pc ? 'PC ' + dec(d.pc) + ' cm' : ''].filter(Boolean).join(' · ');
+      var where = w.birth ? 'Nacimiento' : (r.d.ped ? pedName(r.d.ped).replace(/^Dra?\.\s*/, '').split(' ')[0] : '') || r.d.lugar || '';
+      return '<div class="lrow" ' + (r ? 'data-act="' + (k === 'farmacia' ? 'editPeso' : 'editCons') + '" data-id="' + r.id + '"' : 'data-act="perfil"') + '><div class="wd"><b>' + fd(w.fecha) + '</b><span>' + esc(where || plural(ageDays(w.fecha), 'día', 'días')) + '</span></div>' +
+        '<div class="lm"><p class="kg">' + kg(w.g) + '<small> kg</small></p><p class="mut sm">' + sub + '</p></div>' +
+        (prev ? '<div class="gain ' + (w.g - prev.g >= 0 ? 'up' : 'dn') + '">' + signed(w.g - prev.g) + '<small>en ' + plural(days(prev.fecha, w.fecha), 'día', 'días') + '</small></div>' : '') + '</div>';
+    }).join('') + '</div>';
   }
   function chart() {
-    var W = 340, H = 210, L = 30, B = 22, T = 8, Rr = 30;
+    var W = 340, H = 168, L = 30, B = 22, T = 8, Rr = 30;
     var pts = function (k) { return weights(k).map(function (w) { return { x: ageDays(w.fecha), y: w.g / 1000 }; }).filter(function (p) { return p.x != null && p.x >= 0; }); };
     var pf = pts('farmacia'), pcn = pts('consulta'), xs = pf.concat(pcn).map(function (p) { return p.x; });
     var xmax = Math.max(56, (xs.length ? Math.max.apply(null, xs) : 0) + 21, (ageDays() || 0) + 7); xmax = Math.min(xmax, 731);
@@ -253,23 +251,22 @@
     return null;
   }
   function vVacunas() {
-    var h = head('Vacunas', centroVac() ? 'Se ponen en ' + esc(centroVac()) : 'Calendario de la cartilla', '<button class="add" data-act="addVacExtra" aria-label="Añadir otra vacuna">' + ICON.plus + '</button>') + '<div class="stack">';
-    var extra = live('vacuna').filter(function (v) { return !v.d.grupo; }).sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; });
-    if (extra.length) h += '<div class="card"><div class="lbl">Ya puestas fuera del calendario</div>' + extra.map(function (v) {
-      return '<div class="vx" data-act="editVac" data-id="' + v.id + '"><span class="ok">' + ICON.check + '</span><div><p class="strong">' + esc(v.d.nombre) + '</p><p class="mut sm">' + fd(v.fecha) + (v.d.lote ? ' · lote ' + esc(v.d.lote) : '') + (v.d.centro ? ' · ' + esc(v.d.centro) : '') + '</p></div></div>';
-    }).join('') + '</div>';
-    var nv = nextVac(), shownNext = false;
-    h += '<ol class="tl">' + R.VACCINES.map(function (g) {
-      var given = givenFor(g.key), due = birth() ? addMonths(birth(), g.months) : '', cita = citaFor(g.key), st, cls;
-      if (given.length) { st = 'Puesta el ' + fd(given[0].fecha); cls = 'done'; }
-      else if (nv && nv.g.key === g.key) { st = due ? 'Desde el ' + fd(due, true) : 'La siguiente'; cls = 'next'; shownNext = true; }
-      else { st = due ? 'Desde ' + MES[parseD(due).getMonth()] + ' ' + parseD(due).getFullYear() : ''; cls = 'later'; }
-      return '<li class="' + cls + '" data-act="vacGroup" data-k="' + g.key + '"><div class="tdot">' + (given.length ? ICON.check : '') + '</div><div class="tbody"><div class="trow"><p class="strong">' + g.label + '</p><span class="st">' + st + '</span></div>' +
-        (cita && !given.length ? '<p class="citav">' + ICON.cal + 'Cita ' + fd(cita.fecha, true) + (cita.d.hora ? ' a las ' + esc(cita.d.hora) : '') + '</p>' : '') +
-        '<div class="chips">' + g.vacs.map(function (x) { var ok = given.some(function (v) { return (v.d.codes || []).indexOf(R.vacLabel(x)) >= 0; }); return vchip(x).replace('class="vc', 'class="vc' + (ok ? ' got' : '')); }).join('') + '</div>' +
-        (given[0] && given[0].d.lote ? '<p class="mut sm">Lote ' + esc(given[0].d.lote) + '</p>' : '') + '</div></li>';
-    }).join('') + '</ol>';
-    return h + '<p class="foot">Calendario de la cartilla. «rec.» = recomendada, no incluida en el calendario oficial. Confirma siempre con la pediatra.</p></div>';
+    var h = head('Vacunas', centroVac() ? 'Se ponen en ' + esc(centroVac()) : '', '<button class="add" data-act="addVacExtra" aria-label="Añadir otra vacuna">' + ICON.plus + '</button>') + '<div class="list">';
+    live('vacuna').filter(function (v) { return !v.d.grupo; }).sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; }).forEach(function (v) {
+      h += '<div class="lrow" data-act="editVac" data-id="' + v.id + '"><span class="vd done">' + ICON.check + '</span><div class="lm"><p class="strong">' + esc(v.d.nombre) + '</p><p class="mut sm">Puesta el ' + fd(v.fecha) + (v.d.lote ? ' · lote ' + esc(v.d.lote) : '') + '</p></div></div>';
+    });
+    var nv = nextVac();
+    R.VACCINES.forEach(function (g) {
+      var given = givenFor(g.key), due = birth() ? parseD(addMonths(birth(), g.months)) : null;
+      if (nv && nv.g.key === g.key) {
+        h += '<div class="vnext" data-act="vacGroup" data-k="' + g.key + '"><div class="vh"><span class="vd next"></span><p class="strong">Vacunas de los ' + g.label + '</p></div><p class="mut sm">Desde el ' + fd(nv.due, true) + '</p>' +
+          (nv.cita ? '<p class="citav">' + ICON.cal + 'Cita el ' + fd(nv.cita.fecha, true) + (nv.cita.d.hora ? ' a las ' + esc(nv.cita.d.hora) : '') + '</p>' : '') + '<div class="chips">' + g.vacs.map(vchip).join('') + '</div></div>';
+        return;
+      }
+      h += '<div class="lrow" data-act="vacGroup" data-k="' + g.key + '"><span class="vd' + (given.length ? ' done' : '') + '">' + (given.length ? ICON.check : '') + '</span><div class="lm"><p class="strong">' + g.label + '</p><p class="mut sm">' +
+        g.vacs.map(function (x) { return x.code; }).join(', ') + '</p></div><span class="st' + (given.length ? ' ok' : '') + '">' + (given.length ? 'Puesta ' + fd(given[0].fecha) : due ? MES[due.getMonth()] + ' ' + due.getFullYear() : '') + '</span></div>';
+    });
+    return h + '</div><p class="foot">Calendario de la cartilla; «rec.» es recomendada. Toca un grupo para ver el detalle o marcarlo. Confirma siempre con la pediatra.</p>';
   }
 
   /* ---------- DIARIO ---------- */
@@ -459,6 +456,11 @@
     addDiario: function () { diarioForm(null, S.seg.diario !== 'todo' ? S.seg.diario : null); }, newD: function (d) { diarioForm(null, d.t); },
     editDiario: function (d) { diarioForm(byId(d.id)); },
     toggleTodo: function (d) { var r = byId(d.id); save(Object.assign({}, r, { d: Object.assign({}, r.d, { hecho: !r.d.hecho }) }), r.d.hecho ? 'Pendiente otra vez' : '¡Hecho!'); },
+    pcInfo: function (d) {
+      var p = d.p ? +d.p : null;
+      openSheet('<div class="sheetf"><h2>¿Qué es el percentil?</h2>' + (p ? '<p class="pcbig">Percentil ' + p + '</p><p>De cada 100 bebés de su misma edad, <b>' + p + '</b> pesan menos que ' + esc(perfil().nombre || 'Noah') + ' y <b>' + (100 - p) + '</b> pesan más.</p>' : '<p>Compara su peso con el de bebés de su misma edad.</p>') +
+        '<p class="mut">No es una nota: un percentil 30 es tan normal como uno 70. Entre el 3 y el 97 se considera dentro de lo habitual. Lo que más importa es que vaya siguiendo su curva con el tiempo.</p><p class="mut sm">Se calcula con las tablas de la OMS para niños. Es orientativo: quien lo valora es la pediatra.</p></div>');
+    },
     togglePast: function () { S.showPast = !S.showPast; render(); },
     sync: function () { flush(); refresh(); },
     login: function () { API.signIn({ prompt: 'select_account' }); },
