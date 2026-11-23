@@ -544,7 +544,7 @@
       if (API.fileId()) return start();
       return API.findFile().then(function (id) {
         if (id) return start();
-        screen('<h1>¡Buenas, ' + esc(me.name) + '!</h1><p>Vamos a dejarlo todo listo pa Noah.</p><button class="btn big" data-act="create">Empezar desde cero</button><button class="btn big ghost" data-act="joined">Me han invitado</button><p class="mut sm">Si tu pareja ya lo ha creado y te ha invitado, pulsa «Me han invitado» y elige «Noah APP · datos».</p>');
+        screen('<h1>¡Buenas, ' + esc(me.name) + '!</h1><p>Vamos a dejarlo todo listo pa Noah.</p><button class="btn big" data-act="create">Empezar desde cero</button><button class="btn big ghost" data-act="joined">Me han invitado</button><p class="mut sm">Si tu pareja ya lo ha creado y te ha invitado, pulsa «Me han invitado» y elige «Noah APP · datos».</p><p class="mut sm">¿Te sale «No se puede acceder a tu cuenta de Google»? En Ajustes del iPhone → Apps → Safari, desactiva un momento «Impedir seguimiento entre sitios», vuelve aquí y pulsa otra vez. Luego ya lo puedes volver a activar.</p>');
       });
     }).catch(function (e) { if (e.auth) return reauth(); if (S.recs.length) { S.ready = true; render(); } toast(e.message); });
   }
