@@ -116,6 +116,7 @@
   }
 
   root.GAPI = {
+    api: api, q: q, SHEETS: SHEETS,
     signIn: signIn, signOut: signOut, token: token, ls: ls,
     whoami: function () {
       return api('https://openidconnect.googleapis.com/v1/userinfo').then(function (u) {

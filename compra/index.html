@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Lista de la compra · Pa la tetita de Noah</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2F6BFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="La compra">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="welcome" class="welcome"><div class="loading">Un momentito…</div></div>
+<div id="main" hidden>
+  <header class="hdr">
+    <div class="tt"><small>Lista de la compra</small><h1>Pa la tetita de Noah</h1></div>
+    <button id="sync" class="sync ok" aria-label="Actualizar"></button>
+    <div id="ring" class="ring"></div>
+  </header>
+  <div id="favs" class="favs" hidden></div>
+  <main id="list" class="list"></main>
+  <div class="dock">
+    <button id="finish" class="finish" hidden></button>
+    <form id="addf" class="addf" autocomplete="off">
+      <span id="guess" class="guess">🛒</span>
+      <input id="inp" placeholder="Añade… 2 leche, pan, huevos" enterkeyhint="done" autocapitalize="sentences">
+      <button class="addb" aria-label="Añadir"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    </form>
+  </div>
+</div>
+<div id="layer"></div>
+<script src="../config.js?v=1"></script>
+<script src="../src/google.js?v=2"></script>
+<script src="app.js?v=1"></script>
+<script>
+if('serviceWorker' in navigator&&location.protocol==='https:'){
+  var c0=navigator.serviceWorker.controller, hadSW=!!(c0&&/\/compra\/sw\.js/.test(c0.scriptURL));
+  navigator.serviceWorker.register('sw.js').then(function(r){ r.update(); document.addEventListener('visibilitychange',function(){ if(!document.hidden) r.update(); }); });
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(!hadSW||document.getElementById('upd')) return;
+    var b=document.createElement('button'); b.id='upd'; b.className='updbar'; b.textContent='Versión nueva lista · Toca para actualizar';
+    b.onclick=function(){ location.reload(); }; document.body.appendChild(b);
+  });
+}
+</script>
+</body>
+</html>
