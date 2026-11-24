@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <div id="welcome" class="welcome"><div class="loading">Un momentito…</div></div>
@@ -28,6 +28,7 @@
   <div id="favs" class="favs" hidden></div>
   <main id="list" class="list"></main>
   <div class="dock">
+    <div id="sugs" class="sugs"></div>
     <div class="dockrow">
     <button id="undo" class="undo off" type="button" aria-label="Deshacer"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
     <form id="addf" class="addf" autocomplete="off">
@@ -41,7 +42,7 @@
 <div id="layer"></div>
 <script src="../config.js?v=1"></script>
 <script src="../src/google.js?v=2"></script>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   var c0=navigator.serviceWorker.controller, hadSW=!!(c0&&/\/compra\/sw\.js/.test(c0.scriptURL));
