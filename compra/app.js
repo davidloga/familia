@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '2.0 · 24 nov';
+window.APP_COMPRA_VERSION = '2.1 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
@@ -37,8 +37,10 @@ window.APP_COMPRA_VERSION = '2.0 · 24 nov';
     return { nombre: t.charAt(0).toUpperCase() + t.slice(1), cant: qty };
   }
 
+  var DINO = '<svg class="dino" viewBox="0 0 200 200" aria-hidden="true"><g transform="translate(8 6)"><path d="M62 118 C40 124 22 138 10 162 C34 156 52 150 70 142 Z" fill="#2F6BFF"/><path d="M104 40 l7-16 9 12 8-16 9 13 8-14 7 16 z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="4" stroke-linejoin="round"/><ellipse cx="92" cy="118" rx="44" ry="42" fill="#2F6BFF"/><rect x="88" y="34" width="86" height="64" rx="30" fill="#2F6BFF"/><path d="M96 70 C90 84 88 96 92 108 L120 100 Z" fill="#2F6BFF"/><ellipse cx="98" cy="128" rx="26" ry="26" fill="#BFD3FF"/><rect x="66" y="146" width="22" height="34" rx="11" fill="#1F55E0"/><rect x="100" y="146" width="22" height="34" rx="11" fill="#2F6BFF"/><path d="M124 108 q12 4 12 14" stroke="#2F6BFF" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M118 80 Q146 92 172 78" stroke="#14285E" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M130 85 l4 7 4-6 M146 86 l4 7 4-7 M160 83 l3 6 4-7" fill="#fff" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/><circle cx="140" cy="56" r="11" fill="#fff"/><circle cx="143" cy="57" r="6.5" fill="#14285E"/><circle cx="145" cy="54.5" r="2.2" fill="#fff"/><circle cx="166" cy="48" r="2.6" fill="#14285E"/><circle cx="126" cy="72" r="6" fill="#FF9EB4" opacity=".8"/></g></svg>';
+
   /* ---------- estado ---------- */
-  var S = root.S = { items: ls('compra.cache') || [], queue: ls('compra.queue') || [], me: ls('me'), showCart: false, ready: false, syncing: false, err: false };
+  var S = root.S = { items: ls('compra.cache') || [], queue: ls('compra.queue') || [], me: ls('me'), ready: false, syncing: false, err: false };
   var $ = function (s) { return document.querySelector(s); };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
@@ -137,34 +139,26 @@ window.APP_COMPRA_VERSION = '2.0 · 24 nov';
   function whoColor(n) { var h = 0; for (var i = 0; i < (n || '').length; i++) h = (h * 31 + n.charCodeAt(i)) | 0; return ['#2F6BFF', '#E0A800', '#1A3FA8', '#FF7FA8'][Math.abs(h) % 4]; }
   function render() {
     if (!S.ready) return;
-    var all = active(), todo = all.filter(function (i) { return !i.hecho; }), cart = all.filter(function (i) { return i.hecho; });
-    // anillo
-    var tot = all.length, pct = tot ? cart.length / tot : 0, C = 2 * Math.PI * 17;
-    $('#ring').innerHTML = '<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="17" class="rb"/><circle cx="22" cy="22" r="17" class="rf" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C * (1 - pct)) + '"/></svg><span>' + (tot ? cart.length + '/' + tot : '0') + '</span>';
-    // habituales
+    var todo = active();
+    $('#count').innerHTML = '<b>' + todo.length + '</b><span>' + (todo.length === 1 ? 'por comprar' : 'por comprar') + '</span>';
     var fv = favs();
-    $('#favs').innerHTML = fv.map(function (f) { return '<button data-fav="' + esc(f.nombre) + '" data-sec="' + f.sec + '"><i>' + CAT[f.sec].e + '</i>' + esc(f.nombre) + '</button>'; }).join('');
+    $('#favs').innerHTML = '<span class="fl">Lo de siempre</span>' + fv.map(function (f) { return '<button data-fav="' + esc(f.nombre) + '" data-sec="' + f.sec + '"><i>+</i>' + esc(f.nombre) + '</button>'; }).join('');
     $('#favs').hidden = !fv.length;
-    // lista por secciones
     var h = '';
-    if (!all.length) h = '<div class="empty"><b>La lista está vacía</b><span>¡Qué gloria! Apunta abajo lo que haga falta.</span></div>';
+    if (!todo.length) h = '<div class="empty">' + DINO + '<b>¡Lista vacía!</b><span>Nevera llena, ¡qué gloria! Apunta abajo lo que vaya haciendo falta.</span></div>';
     CATS.forEach(function (c) {
       var its = todo.filter(function (i) { return i.sec === c[0]; }).sort(function (a, b) { return (a.creado || '') < (b.creado || '') ? -1 : 1; });
       if (!its.length) return;
       h += '<section class="sec" style="--c:' + c[3] + '"><h2><i>' + c[2] + '</i>' + c[1] + '<b>' + its.length + '</b></h2><div class="pills">' + its.map(row).join('') + '</div></section>';
     });
-    if (cart.length) {
-      h += '<section class="sec cart"><button class="carth" data-act="cart"><i>💛</i>En el carro<b>' + cart.length + '</b><span>' + (S.showCart ? 'Ocultar' : 'Ver') + '</span></button>' + (S.showCart ? '<div class="pills">' + cart.map(row).join('') + '</div>' : '') + '</section>';
-    }
-    if (all.length) h += '<p class="hint">Toca para echarlo al carro · mantén pulsado para editar</p>';
+    if (todo.length) h += '<p class="hint">Toca lo que eches al carro · mantén pulsado para editar</p>';
     h += '<p class="ver">versión ' + root.APP_COMPRA_VERSION + '</p>';
     $('#list').innerHTML = h;
-    var fin = $('#finish'); fin.hidden = !cart.length; fin.innerHTML = '💙 Terminar compra <b>' + cart.length + '</b>';
     paintSync();
   }
   function row(i) {
     var c = CATS[(CAT[i.sec] || CAT.otros).i];
-    return '<button class="it' + (i.hecho ? ' on' : '') + '" data-id="' + i.id + '" style="--c:' + c[3] + '"><span class="ck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' + esc(i.nombre) + (i.cant ? '<em>' + esc(i.cant) + '</em>' : '') +
+    return '<button class="it" data-id="' + i.id + '" style="--c:' + c[3] + '"><span class="ck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' + esc(i.nombre) + (i.cant ? '<em>' + esc(i.cant) + '</em>' : '') +
       (i.autor ? '<span class="who" style="background:' + whoColor(i.autor) + '">' + esc(initials(i.autor)) + '</span>' : '') + '</button>';
   }
   function paintSync() {
@@ -180,7 +174,7 @@ window.APP_COMPRA_VERSION = '2.0 · 24 nov';
   $('#addf').addEventListener('submit', function (e) {
     e.preventDefault();
     var parts = inp.value.split(/[,\n]/).map(function (s) { return s.trim(); }).filter(Boolean); if (!parts.length) return;
-    var listed = {}; active().filter(function (i) { return !i.hecho; }).forEach(function (i) { listed[norm(i.nombre)] = 1; });
+    var listed = {}; active().forEach(function (i) { listed[norm(i.nombre)] = 1; });
     var recs = [], dup = [];
     parts.forEach(function (p) { var x = parse(p); if (listed[norm(x.nombre)]) { dup.push(x.nombre); return; } listed[norm(x.nombre)] = 1; recs.push({ nombre: x.nombre, cant: x.cant, sec: guess(x.nombre), hecho: false }); });
     if (recs.length) add(recs);
@@ -198,21 +192,25 @@ window.APP_COMPRA_VERSION = '2.0 · 24 nov';
   $('#list').addEventListener('contextmenu', function (e) { if (e.target.closest('.it')) e.preventDefault(); });
   $('#list').addEventListener('click', function (e) {
     if (lpFired) { lpFired = false; return; }
-    if (e.target.closest('[data-act=cart]')) { S.showCart = !S.showCart; return render(); }
-    var it = e.target.closest('.it'); if (!it) return;
+    var it = e.target.closest('.it'); if (!it || it.classList.contains('gone')) return;
     var r = byId(it.dataset.id); if (!r) return;
     if (navigator.vibrate) navigator.vibrate(8);
-    it.classList.add('pop');
-    setTimeout(function () { upd([Object.assign({}, r, { hecho: !r.hecho })]); var a = active(); if (!r.hecho && a.length && a.every(function (x) { return x.hecho; })) { toast('¡Todo en el carro! 💛💙'); confetti(40); } }, 160);
+    it.classList.add('gone');
+    setTimeout(function () { bought(r); }, 230);
   });
-  function byId(id) { return S.items.find(function (i) { return i.id === id; }); }
-  $('#finish').addEventListener('click', function () {
-    var cart = active().filter(function (i) { return i.hecho; }); if (!cart.length) return;
+  var batch = { recs: [], t: 0 };
+  function bought(r) {
     var now = new Date().toISOString();
-    upd(cart.map(function (i) { return Object.assign({}, i, { borrado: true, comprado: now }); }));
-    confetti(110); S.showCart = false;
-    toast('¡Compra hecha! Pa casa 💛💙', 'Deshacer', function () { upd(cart.map(function (i) { return Object.assign({}, i, { borrado: false, comprado: '' }); })); });
-  });
+    if (Date.now() - batch.t > 5000) batch.recs = [];
+    batch.recs.push(r); batch.t = Date.now();
+    upd([Object.assign({}, r, { hecho: true, borrado: true, comprado: now })]);
+    var recs = batch.recs.slice(), empty = !active().length;
+    if (empty) confetti(110);
+    toast(empty ? '¡Compra hecha! Pa casa 💛💙' : recs.length === 1 ? '«' + r.nombre + '» al carro' : recs.length + ' cosas al carro', 'Deshacer', function () {
+      batch.recs = []; upd(recs.map(function (x) { return Object.assign({}, x, { hecho: false, borrado: false, comprado: '' }); }));
+    });
+  }
+  function byId(id) { return S.items.find(function (i) { return i.id === id; }); }
   function edit(r) {
     if (!r) return;
     var layer = $('#layer');
@@ -262,7 +260,7 @@ window.APP_COMPRA_VERSION = '2.0 · 24 nov';
       });
     }).catch(function (e) { if (e.auth) return reauth(); if (S.items.length) { S.ready = true; $('#main').hidden = false; render(); } toast(e.message); });
   }
-  $('#sync').addEventListener('click', function () { flush(); refresh(); });
+  $('#count').addEventListener('click', function () { flush(); refresh(); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden && S.ready) refresh(); });
   setInterval(function () { if (!document.hidden && S.ready && !$('#layer').innerHTML && document.activeElement !== inp) refresh(); }, 5000);
   addEventListener('online', function () { flush(); refresh(); });

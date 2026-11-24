@@ -15,20 +15,19 @@
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 <div id="welcome" class="welcome"><div class="loading">Un momentito…</div></div>
 <div id="main" hidden>
   <header class="hdr">
     <div class="tt"><small>Lista de la compra</small><h1>Pa la tetita de Noah</h1></div>
-    <button id="sync" class="sync ok" aria-label="Actualizar"></button>
-    <div id="ring" class="ring"></div>
+    <button id="count" class="count" aria-label="Actualizar"></button>
+    <span id="sync" class="sync ok"></span>
   </header>
   <div id="favs" class="favs" hidden></div>
   <main id="list" class="list"></main>
   <div class="dock">
-    <button id="finish" class="finish" hidden></button>
     <form id="addf" class="addf" autocomplete="off">
       <span id="guess" class="guess">🛒</span>
       <input id="inp" placeholder="Añade… 2 leche, pan, huevos" enterkeyhint="done" autocapitalize="sentences">
@@ -39,7 +38,7 @@
 <div id="layer"></div>
 <script src="../config.js?v=1"></script>
 <script src="../src/google.js?v=2"></script>
-<script src="app.js?v=1"></script>
+<script src="app.js?v=2"></script>
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   var c0=navigator.serviceWorker.controller, hadSW=!!(c0&&/\/compra\/sw\.js/.test(c0.scriptURL));
