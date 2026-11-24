@@ -1,23 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#2F6BFF"/>
-<circle cx="256" cy="560" r="300" fill="#2459E6"/>
-<g transform="translate(186 72) scale(1.25)"><g transform="translate(8 6)">
-<path d="M62 118 C40 124 22 138 10 162 C34 156 52 150 70 142 Z" fill="#A9C4FF"/>
-
-<path d="M104 40 l7-16 9 12 8-16 9 13 8-14 7 16 z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="4" stroke-linejoin="round"/><ellipse cx="92" cy="118" rx="44" ry="42" fill="#A9C4FF"/>
-<rect x="88" y="34" width="86" height="64" rx="30" fill="#A9C4FF"/>
-<path d="M96 70 C90 84 88 96 92 108 L120 100 Z" fill="#A9C4FF"/>
-<ellipse cx="98" cy="128" rx="26" ry="26" fill="#FFFFFF"/>
-<rect x="66" y="146" width="22" height="34" rx="11" fill="#8FB0F5"/>
-<rect x="100" y="146" width="22" height="34" rx="11" fill="#A9C4FF"/>
-<path d="M124 108 q12 4 12 14" stroke="#A9C4FF" stroke-width="8" stroke-linecap="round" fill="none"/>
-<path d="M118 80 Q146 92 172 78" stroke="#14285E" stroke-width="4" stroke-linecap="round" fill="none"/>
-<path d="M130 85 l4 7 4-6 M146 86 l4 7 4-7 M160 83 l3 6 4-7" fill="#fff" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
-<circle cx="140" cy="56" r="11" fill="#fff"/><circle cx="143" cy="57" r="6.5" fill="#14285E"/><circle cx="145" cy="54.5" r="2.2" fill="#fff"/>
-<circle cx="166" cy="48" r="2.6" fill="#14285E"/>
-<circle cx="126" cy="72" r="6" fill="#FF9EB4" opacity=".8"/>
-</g></g>
-<rect x="52" y="200" width="408" height="210" rx="40" fill="#14285E"/>
-<text x="256" y="292" text-anchor="middle" font-family="Archivo Black" font-size="92" fill="#FFFFFF" letter-spacing="-2">Compra</text>
-<text x="256" y="388" text-anchor="middle" font-family="Archivo Black" font-size="92" fill="#FFCF33" letter-spacing="-2">Dona</text>
-<circle cx="150" cy="456" r="20" fill="#FFCF33"/><circle cx="362" cy="456" r="20" fill="#FFCF33"/>
-<circle cx="150" cy="456" r="8" fill="#14285E"/><circle cx="362" cy="456" r="8" fill="#14285E"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect width="512" height="512" fill="#17321F"/>
+<circle cx="256" cy="290" r="150" fill="#F07A1A"/>
+<circle cx="196" cy="218" r="24" fill="#FFB36B" opacity=".6"/>
+<path d="M256 140c10-46 46-74 100-80-6 54-42 84-100 80z" fill="#3E8A57"/>
+<path d="M256 142c-4-24-16-40-36-50" stroke="#F3F5EF" stroke-width="12" stroke-linecap="round" fill="none"/>
+<path d="M196 292l42 42 80-86" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
