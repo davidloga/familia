@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '2.1 · 24 nov';
+window.APP_COMPRA_VERSION = '2.2 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
@@ -154,6 +154,7 @@ window.APP_COMPRA_VERSION = '2.1 · 24 nov';
     if (todo.length) h += '<p class="hint">Toca lo que eches al carro · mantén pulsado para editar</p>';
     h += '<p class="ver">versión ' + root.APP_COMPRA_VERSION + '</p>';
     $('#list').innerHTML = h;
+    $('#undo').classList.toggle('off', !gone().length);
     paintSync();
   }
   function row(i) {
@@ -209,6 +210,28 @@ window.APP_COMPRA_VERSION = '2.1 · 24 nov';
     toast(empty ? '¡Compra hecha! Pa casa 💛💙' : recs.length === 1 ? '«' + r.nombre + '» al carro' : recs.length + ' cosas al carro', 'Deshacer', function () {
       batch.recs = []; upd(recs.map(function (x) { return Object.assign({}, x, { hecho: false, borrado: false, comprado: '' }); }));
     });
+  }
+  /* ---------- deshacer cuando quieras (sale de lo guardado en Drive, también tras cerrar la app) ---------- */
+  function gone() {
+    return S.items.filter(function (i) { return i.borrado && !/^imph/.test(i.id) && i.mod; }).sort(function (a, b) { return a.mod < b.mod ? 1 : -1; });
+  }
+  function restore(recs, msg) { upd(recs.map(function (x) { return Object.assign({}, x, { hecho: false, borrado: false, comprado: '' }); })); if (msg) toast(msg); }
+  function ago(t) { var m = Math.round((Date.now() - Date.parse(t)) / 60000); if (m < 1) return 'ahora mismo'; if (m < 60) return 'hace ' + m + ' min'; var h = Math.round(m / 60); if (h < 24) return 'hace ' + h + ' h'; var d = Math.round(h / 24); return d === 1 ? 'ayer' : 'hace ' + d + ' días'; }
+  $('#undo').addEventListener('click', function () {
+    var g = gone(); if (!g.length) return toast('No hay nada que deshacer');
+    restore([g[0]]); toast('«' + g[0].nombre + '» ha vuelto a la lista', 'Ver más', recentSheet);
+  });
+  function recentSheet() {
+    var g = gone().slice(0, 30), layer = $('#layer');
+    layer.innerHTML = '<div class="scrim" data-x></div><div class="sheet"><button type="button" class="x" data-x aria-label="Cerrar">×</button><h3>Quitados hace poco</h3><p class="meta">Toca uno para devolverlo a la lista.</p><div class="gone">' +
+      (g.length ? g.map(function (i) { var c = CAT[i.sec] || CAT.otros; return '<button data-back="' + i.id + '"><i>' + c.e + '</i><span>' + esc(i.nombre) + (i.cant ? ' <em>' + esc(i.cant) + '</em>' : '') + '</span><small>' + ago(i.mod) + '</small><b>Recuperar</b></button>'; }).join('') : '<p class="meta">No has quitado nada todavía.</p>') + '</div></div>';
+    layer.classList.add('open');
+    layer.onclick = function (e) {
+      if (e.target.closest('[data-x]')) return close();
+      var b = e.target.closest('[data-back]'); if (!b) return;
+      var r = byId(b.dataset.back); if (!r) return;
+      restore([r]); b.remove(); toast('«' + r.nombre + '» ha vuelto a la lista');
+    };
   }
   function byId(id) { return S.items.find(function (i) { return i.id === id; }); }
   function edit(r) {
