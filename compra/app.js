@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '2.3 · 24 nov';
+window.APP_COMPRA_VERSION = '2.4 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
@@ -8,10 +8,10 @@ window.APP_COMPRA_VERSION = '2.3 · 24 nov';
 
   /* Secciones, en el orden en que se recorre el súper */
   var CATS = [
-    ['fruta', 'Fruta y verdura', '🥦', '#1E9E62'], ['carne', 'Carne y pescado', '🥩', '#E0484F'], ['lacteos', 'Lácteos y huevos', '🧀', '#D99A00'],
-    ['pan', 'Panadería', '🥖', '#C77A2E'], ['despensa', 'Despensa', '🥫', '#6E61D6'], ['congelados', 'Congelados', '🧊', '#2B9BE0'],
-    ['bebidas', 'Bebidas', '🧃', '#D64D8A'], ['bebe', 'Pa Noah', '🍼', '#FF7FA8'], ['higiene', 'Higiene', '🧴', '#17A39D'],
-    ['limpieza', 'Limpieza', '🧽', '#2F6BFF'], ['otros', 'Otros', '🛒', '#7A86A8']
+    ['fruta', 'Fruta y verdura', '🥦', '#13804D'], ['carne', 'Carne y pescado', '🥩', '#C8323A'], ['lacteos', 'Lácteos y huevos', '🧀', '#B27A00'],
+    ['pan', 'Panadería', '🥖', '#A85F1B'], ['despensa', 'Despensa', '🥫', '#5646C4'], ['congelados', 'Congelados', '🧊', '#1478B8'],
+    ['bebidas', 'Bebidas', '🧃', '#B8336F'], ['bebe', 'Pa Noah', '🍼', '#D9487A'], ['higiene', 'Higiene', '🧴', '#0D827D'],
+    ['limpieza', 'Limpieza', '🧽', '#2F6BFF'], ['otros', 'Otros', '🛒', '#5C6890']
   ];
   var MERCADONA = ['fruta', 'pan', 'carne', 'lacteos', 'despensa', 'bebidas', 'bebe', 'higiene', 'limpieza', 'congelados', 'otros'];
   var CAT = {}; CATS.forEach(function (c, i) { CAT[c[0]] = { k: c[0], n: c[1], e: c[2], c: c[3], i: i }; });
@@ -150,13 +150,13 @@ window.APP_COMPRA_VERSION = '2.3 · 24 nov';
 
   /* ---------- pintar ---------- */
   function initials(n) { return n ? n.trim().charAt(0).toUpperCase() : ''; }
-  function whoColor(n) { var h = 0; for (var i = 0; i < (n || '').length; i++) h = (h * 31 + n.charCodeAt(i)) | 0; return ['#2F6BFF', '#E0A800', '#1A3FA8', '#FF7FA8'][Math.abs(h) % 4]; }
+  function whoColor(n) { var h = 0; for (var i = 0; i < (n || '').length; i++) h = (h * 31 + n.charCodeAt(i)) | 0; return ['#2F6BFF', '#FFCF33', '#1A3FA8', '#D9487A'][Math.abs(h) % 4]; }
   function render() {
     if (!S.ready) return;
     var todo = active();
     $('#count').innerHTML = '<b>' + todo.length + '</b><span>' + (todo.length === 1 ? 'por comprar' : 'por comprar') + '</span>';
     var fv = favs();
-    $('#favs').innerHTML = '<span class="fl">Lo de siempre</span>' + fv.map(function (f) { return '<button data-fav="' + esc(f.nombre) + '" data-sec="' + f.sec + '"><i>+</i>' + esc(f.nombre) + '</button>'; }).join('');
+    $('#favs').innerHTML = '<span class="fl">Sugerencias</span>' + fv.map(function (f) { return '<button data-fav="' + esc(f.nombre) + '" data-sec="' + f.sec + '"><i>+</i>' + esc(f.nombre) + '</button>'; }).join('');
     $('#favs').hidden = !fv.length;
     var h = '';
     if (!todo.length) h = '<div class="empty">' + DINO + '<b>¡Lista vacía!</b><span>Nevera llena, ¡qué gloria! Apunta abajo lo que vaya haciendo falta.</span></div>';
@@ -175,7 +175,7 @@ window.APP_COMPRA_VERSION = '2.3 · 24 nov';
   function row(i) {
     var c = CATS[(CAT[i.sec] || CAT.otros).i];
     return '<button class="it" data-id="' + i.id + '" style="--c:' + c[3] + '"><span class="ck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' + esc(i.nombre) + (i.cant ? '<em>' + esc(i.cant) + '</em>' : '') + (i.nota ? '<small class="nt">' + esc(i.nota) + '</small>' : '') +
-      (i.autor ? '<span class="who" style="background:' + whoColor(i.autor) + '">' + esc(initials(i.autor)) + '</span>' : '') + '</button>';
+      (i.autor ? '<span class="who" style="background:' + whoColor(i.autor) + ';color:' + (whoColor(i.autor) === '#FFCF33' ? '#14285E' : '#fff') + '">' + esc(initials(i.autor)) + '</span>' : '') + '</button>';
   }
   function paintSync() {
     var d = $('#sync'); if (!d) return;
