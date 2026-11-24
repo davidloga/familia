@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '2.6 · 24 nov';
+window.APP_COMPRA_VERSION = '2.7 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
@@ -150,6 +150,7 @@ window.APP_COMPRA_VERSION = '2.6 · 24 nov';
 
   /* ---------- pintar ---------- */
   function initials(n) { return n ? n.trim().charAt(0).toUpperCase() : ''; }
+  function whoIdx(n) { return ({ D: 0, S: 1 })[initials(n)] != null ? ({ D: 0, S: 1 })[initials(n)] : 2 + (n.length % 2); }
   function whoColor(n) { var h = 0; for (var i = 0; i < (n || '').length; i++) h = (h * 31 + n.charCodeAt(i)) | 0; return ['#2F6BFF', '#FFCF33', '#1A3FA8', '#D9487A'][Math.abs(h) % 4]; }
   function render() {
     if (!S.ready) return;
@@ -163,7 +164,7 @@ window.APP_COMPRA_VERSION = '2.6 · 24 nov';
     order().map(function (k) { return CATS[CAT[k].i]; }).forEach(function (c) {
       var its = todo.filter(function (i) { return i.sec === c[0]; }).sort(function (a, b) { return (a.creado || '') < (b.creado || '') ? -1 : 1; });
       if (!its.length) return;
-      h += '<section class="sec"><h2>' + c[1] + '<b>' + its.length + '</b></h2><div class="pills">' + its.map(row).join('') + '</div></section>';
+      h += '<section class="sec"><h2><i>' + c[2] + '</i>' + c[1] + '<b>' + its.length + '</b></h2><div class="pills">' + its.map(row).join('') + '</div></section>';
     });
     if (todo.length) h += '<p class="hint">Toca lo que eches al carro · mantén pulsado para editar</p>';
     h += '<p class="hint"><button class="link" data-order>Ordenar secciones como vuestro súper</button></p>';
@@ -175,7 +176,7 @@ window.APP_COMPRA_VERSION = '2.6 · 24 nov';
   function row(i) {
     var c = CATS[(CAT[i.sec] || CAT.otros).i];
     return '<button class="it" data-id="' + i.id + '"><span class="ck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' + esc(i.nombre) + (i.cant ? '<em>' + esc(i.cant) + '</em>' : '') + (i.nota ? '<small class="nt">' + esc(i.nota) + '</small>' : '') +
-      (i.autor ? '<span class="who">' + esc(initials(i.autor)) + '</span>' : '') + '</button>';
+      (i.autor ? '<span class="who w' + whoIdx(i.autor) + '">' + esc(initials(i.autor)) + '</span>' : '') + '</button>';
   }
   function paintSync() {
     var d = $('#sync'); if (!d) return;
@@ -323,6 +324,7 @@ window.APP_COMPRA_VERSION = '2.6 · 24 nov';
   /* ---------- arranque ---------- */
   function screen(h) { $('#main').hidden = true; var w = $('#welcome'); w.hidden = false; w.innerHTML = h; }
   function login() { screen('<img src="icons/icon-192.png" alt=""><h1>CompraDona</h1><p>La lista de la compra pa la tetita de Noah. Lo que apunta uno, le aparece al otro al momento.</p><button class="btn big" id="go">Entrar con Google</button>'); $('#go').onclick = function () { G.signIn({ prompt: 'select_account' }); }; }
+  $('#hdino').outerHTML = DINO;
   function start() { $('#welcome').hidden = true; $('#main').hidden = false; S.ready = true; render(); refresh(); wake(); document.addEventListener('click', wake, { once: true }); }
   function boot() {
     if (!G.token()) { if (G.fileId() && S.items.length) { S.ready = true; $('#main').hidden = false; render(); } return S.me ? reauth() : login(); }
