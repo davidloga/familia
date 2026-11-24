@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '2.4 · 24 nov';
+window.APP_COMPRA_VERSION = '2.5 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
@@ -322,7 +322,7 @@ window.APP_COMPRA_VERSION = '2.4 · 24 nov';
 
   /* ---------- arranque ---------- */
   function screen(h) { $('#main').hidden = true; var w = $('#welcome'); w.hidden = false; w.innerHTML = h; }
-  function login() { screen('<img src="icons/icon-192.png" alt=""><h1>Lista de la compra</h1><p>Pa la tetita de Noah. Lo que apunta uno, le aparece al otro al momento.</p><button class="btn big" id="go">Entrar con Google</button>'); $('#go').onclick = function () { G.signIn({ prompt: 'select_account' }); }; }
+  function login() { screen('<img src="icons/icon-192.png" alt=""><h1>CompraDona</h1><p>La lista de la compra pa la tetita de Noah. Lo que apunta uno, le aparece al otro al momento.</p><button class="btn big" id="go">Entrar con Google</button>'); $('#go').onclick = function () { G.signIn({ prompt: 'select_account' }); }; }
   function start() { $('#welcome').hidden = true; $('#main').hidden = false; S.ready = true; render(); refresh(); wake(); document.addEventListener('click', wake, { once: true }); }
   function boot() {
     if (!G.token()) { if (G.fileId() && S.items.length) { S.ready = true; $('#main').hidden = false; render(); } return S.me ? reauth() : login(); }

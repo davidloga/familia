@@ -133,3 +133,4 @@ h1,h2,.btn{font-family:'Baloo 2',system-ui,sans-serif}
 .ord button:disabled{opacity:.3}
 
 @media (prefers-color-scheme:dark){.sec{box-shadow:none;border:1px solid var(--line)}.ck{border-color:color-mix(in srgb,var(--c) 55%,#fff)}.sec::before{background:color-mix(in srgb,var(--c) 70%,#fff)}.hdr{background:linear-gradient(135deg,#2559E0,#14307F)}}
+.tt h1{font-size:26px;letter-spacing:-.3px}.tt h1 span{color:var(--sun)}
