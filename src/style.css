@@ -266,3 +266,8 @@ svg{display:block}
 .legend .lp{border-radius:0;height:0;border-top:2px dashed #E8A800;width:14px;vertical-align:3px}
 .stl{font-weight:800;margin-top:2px}.stl.s-ok{color:var(--ok)}.stl.s-watch,.stl.s-info{color:#B07D00}
 .hero .hn .hi{font-size:13px;font-weight:700;opacity:.85;margin-bottom:-2px}
+/* que un texto largo nunca ensanche la pantalla */
+.home,.stack{grid-template-columns:minmax(0,1fr)}
+.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card,.tile,.list,.lrow{min-width:0}
+html,body{overflow-x:hidden}
