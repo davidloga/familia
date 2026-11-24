@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>CompraDona</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#F6F7F9">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="CompraDona">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-3.png">
+<link rel="icon" type="image/png" href="icons/icon-192-3.png">
 
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 <div id="welcome" class="welcome"><div class="loading">Un momentito…</div></div>
 <div id="main" hidden>
   <header class="hdr">
-    <div class="tt"><h1>Compra<span>Dona</span></h1><small>Pa la tetita de Noah</small></div>
-    <button id="count" class="count" aria-label="Actualizar"></button>
+    <img class="brand" src="icons/brand.png" alt="CompraDona">
+    <div class="hmeta"><button id="count" class="count" aria-label="Actualizar"></button><small>Pa la tetita de Noah</small></div>
     <span id="sync" class="sync ok"></span>
   </header>
   <div id="favs" class="favs" hidden></div>
@@ -42,7 +42,7 @@
 <div id="layer"></div>
 <script src="../config.js?v=1"></script>
 <script src="../src/google.js?v=2"></script>
-<script src="app.js?v=12"></script>
+<script src="app.js?v=13"></script>
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   var c0=navigator.serviceWorker.controller, hadSW=!!(c0&&/\/compra\/sw\.js/.test(c0.scriptURL));

@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '3.3 · 24 nov';
+window.APP_COMPRA_VERSION = '3.4 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
@@ -165,7 +165,7 @@ window.APP_COMPRA_VERSION = '3.3 · 24 nov';
   function render() {
     if (!S.ready) return;
     var todo = active();
-    $('#count').innerHTML = '<b>' + todo.length + '</b><span>' + (todo.length === 1 ? 'por comprar' : 'por comprar') + '</span>';
+    $('#count').innerHTML = '<b>' + todo.length + '</b><span>por comprar</span>';
     var fv = favs();
     $('#favs').innerHTML = '<span class="fl">Sugerencias</span>' + fv.map(function (f) { return '<button data-fav="' + esc(f.nombre) + '" data-sec="' + f.sec + '"><i>+</i>' + esc(f.nombre) + '</button>'; }).join('');
     $('#favs').hidden = !fv.length;
@@ -349,6 +349,7 @@ window.APP_COMPRA_VERSION = '3.3 · 24 nov';
   }
   $('#count').addEventListener('click', function () { flush(); refresh(); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden && S.ready) refresh(); });
+  addEventListener('scroll', function () { $('.hdr').classList.toggle('mini', scrollY > 30); }, { passive: true });
   setInterval(function () { if (!document.hidden && S.ready && !$('#layer').innerHTML && document.activeElement !== inp) refresh(); }, 5000);
   addEventListener('online', function () { flush(); refresh(); });
   root.Compra = { guess: guess, parse: parse };

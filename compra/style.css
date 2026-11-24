@@ -1,6 +1,6 @@
 /* CompraDona 3.1 · neutro profesional + un acento; el color solo identifica categorías */
 :root{
-  --accent:#4F46E5; --accent2:#4338CA; --accent-soft:#EEF0FF;
+  --accent:#0B5A17; --accent2:#063D0F; --accent-soft:#E2F0E3; --brandor:#F2620A;
   --bg:#F6F7F9; --card:#FFFFFF; --ink:#0F172A; --ink2:#334155; --mut:#64748B; --line:#E5E7EB;
   --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom);
   color-scheme:light;
@@ -129,3 +129,19 @@ h1,h2,h3{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',Inter,sys
 .updbar{position:fixed;left:12px;right:12px;top:calc(var(--safe-t) + 8px);z-index:80;background:var(--ink);color:#fff;font-weight:700;padding:12px;border-radius:14px}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .welcome img{width:240px;height:auto;border-radius:0;box-shadow:none}
+
+/* 3.4 · cabecera con la marca como protagonista */
+.hdr{background:rgba(255,255,255,.94);align-items:center;padding:calc(var(--safe-t) + 10px) 16px 12px;border-bottom:1px solid rgba(15,23,42,.07);box-shadow:0 6px 20px -16px rgba(15,23,42,.35);transition:padding .2s}
+.brand{height:92px;width:auto;flex:none;transition:height .2s}
+.hmeta{margin-left:auto;display:grid;justify-items:end;gap:4px;text-align:right}
+.hmeta small{font-size:12.5px;font-weight:600;color:var(--mut)}
+.count{display:grid;justify-items:end;gap:0;padding:0;background:none;color:var(--ink);border-radius:0;line-height:1}
+.count b{font-size:44px;font-weight:800;letter-spacing:-1.5px;color:var(--brandor)}
+.count span{font-size:13px;font-weight:700;opacity:1;color:var(--accent)}
+.hdr.mini{padding-top:calc(var(--safe-t) + 6px);padding-bottom:8px}
+.hdr.mini .brand{height:48px}
+.hdr.mini .count b{font-size:28px}
+.hdr.mini .hmeta small{display:none}
+.sugs button{border-color:#B9D7BC}
+.toast button{color:#FDBA74}
+@media (prefers-reduced-motion:reduce){.hdr,.brand{transition:none}}
