@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '3.1 · 24 nov';
+window.APP_COMPRA_VERSION = '3.2 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
