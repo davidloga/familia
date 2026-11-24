@@ -14,12 +14,13 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="src/style.css?v=1">
+
+<link rel="stylesheet" href="src/style.css?v=2">
 </head>
 <body>
 <div class="app" id="app"><div class="loading"><svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#DCE7FF" stroke-width="6"/><path d="M24 4a20 20 0 0 1 20 20" fill="none" stroke="#2F6BFF" stroke-width="6" stroke-linecap="round"/></svg>Un momentito…</div></div>
 <div id="layer"></div>
+<button id="fab" class="fab" data-act="fab" aria-label="Apuntar algo" hidden><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 <nav class="nav" id="nav" hidden><div class="in">
   <button data-v="home"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z"/></svg>Inicio</button>
   <button data-v="citas"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Citas</button>
@@ -29,8 +30,8 @@
 </div></nav>
 <script src="config.js?v=1"></script>
 <script src="src/data.js?v=1"></script>
-<script src="src/google.js?v=1"></script>
-<script src="src/ui.js?v=1"></script>
+<script src="src/google.js?v=2"></script>
+<script src="src/ui.js?v=2"></script>
 <script>
 /* Actualizaciones: si llega una versión nueva mientras usas la app, aparece un aviso para recargar */
 if('serviceWorker' in navigator&&location.protocol==='https:'){

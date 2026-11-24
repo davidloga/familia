@@ -271,3 +271,48 @@ svg{display:block}
 .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
 .card,.tile,.list,.lrow{min-width:0}
 html,body{overflow-x:hidden}
+
+/* ===== 2.0 · acabado fino: tipografía del iPhone, foto de Noah, bloque «Lo próximo», botón + ===== */
+:root{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Inter,system-ui,sans-serif;--sky:#F3F6FC;--line:#E4E9F3;--mut:#5E6B8C;--ink:#14285E}
+body{-webkit-font-smoothing:antialiased}
+h1,h2,h3,.big,.dt b,.kg,.trow .strong,.vh .strong,.pcbig,.mini b,.count b{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',Inter,system-ui,sans-serif!important;letter-spacing:-.5px}
+.card,.tile,.list,.tbody{border:1px solid var(--line);box-shadow:0 1px 2px rgba(20,40,94,.04),0 6px 18px -14px rgba(20,40,94,.25)}
+.top h1{font-size:30px;font-weight:800}
+.app{padding-bottom:calc(100px + var(--safe-b))}
+
+.hero2{position:relative;height:230px;border-radius:26px;overflow:hidden;background:linear-gradient(135deg,#2F6BFF,#1E4FD8) center/cover no-repeat;background-position:center 35%;color:#fff;box-shadow:0 14px 30px -18px rgba(20,40,94,.7)}
+.hero2.has::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,50,0) 35%,rgba(10,20,50,.72) 100%)}
+.hcap{position:absolute;left:18px;right:18px;bottom:16px;z-index:1}
+.hcap .hi{font-size:13px;font-weight:600;opacity:.9}
+.hcap h1{font-size:38px;font-weight:800;line-height:1.02;letter-spacing:-1.2px}
+.hcap .age{font-size:16px;font-weight:600;opacity:.95;margin-top:2px}
+.hero2 .gear{position:absolute;right:12px;top:12px;z-index:2;background:rgba(255,255,255,.22);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.hph{position:absolute;right:14px;top:48px;display:grid;justify-items:center;gap:6px;z-index:1}
+.hph .dino{width:96px;height:96px;background:var(--sun);border-radius:50%;padding:6px 8px 12px}
+.addph{background:#fff;color:var(--ink);font-weight:700;font-size:12.5px;padding:6px 10px;border-radius:99px}
+
+.nextc{background:#fff;border:1px solid var(--line);border-radius:22px;padding:14px;box-shadow:0 1px 2px rgba(20,40,94,.04),0 6px 18px -14px rgba(20,40,94,.25);cursor:pointer}
+.nxh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.nxh .lbl{margin:0}
+.cd{font-size:12.5px;font-weight:800;padding:4px 10px;border-radius:99px;background:var(--blue2);color:var(--blue)}
+.cd.hot{background:var(--sun);color:var(--ink)}
+.nextc .dt{width:56px;height:60px;border-radius:16px}
+.nextc .dt b{font-size:26px}
+.ttl{font-size:19px;font-weight:800;letter-spacing:-.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.tile .big{font-size:30px;font-weight:800}
+.tile .big small{font-size:14px;font-weight:600;color:var(--mut);margin-left:3px}
+.spark{display:block;width:100%;height:30px;margin:2px 0 6px}
+.spark .sl{fill:none;stroke:var(--blue);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.spark .sa{fill:var(--blue2);opacity:.7}
+.spark .sd{fill:#fff;stroke:var(--blue);stroke-width:2}
+.trow2{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.trow2 .stl{margin:0;font-size:12.5px}
+
+.fab{position:fixed;right:16px;bottom:calc(80px + var(--safe-b));z-index:21;width:58px;height:58px;border-radius:20px;background:var(--blue);display:grid;place-items:center;box-shadow:0 12px 24px -10px rgba(47,107,255,.8)}
+.fab svg{width:26px;height:26px;stroke:#fff;stroke-width:2.8;stroke-linecap:round;fill:none}
+.fab:active{transform:scale(.94)}
+.fabg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.fabg button{display:flex;align-items:center;gap:10px;padding:14px 12px;border-radius:16px;background:var(--sky);font-weight:700;font-size:15px;text-align:left}
+.fabg i{font-style:normal;font-size:22px}
+.nav{border-top:1px solid var(--line)}

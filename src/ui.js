@@ -141,22 +141,38 @@
   }
   function greet() { var h = new Date().getHours(), n = S.me && S.me.name ? ', ' + esc(S.me.name) : ''; return (h < 6 ? '¡Buenas noches' : h < 13 ? '¡Buenos días' : h < 21 ? '¡Buenas tardes' : '¡Buenas noches') + n + '!'; }
   function gainShort(a, b) { var g = b.g - a.g, d = days(a.fecha, b.fecha) || 0; return d >= 4 && g > 0 ? '+' + Math.round(g / d * 7) + ' g/semana' : signed(g) + ' en ' + plural(d, 'día', 'días'); }
+  function foto() { var f = live('foto').sort(function (a, b) { return (a.creado || '') < (b.creado || '') ? -1 : 1; }).pop(); return f ? f.d.img : ''; }
+  function spark() {
+    var pts = weights('farmacia').concat(weights('consulta')).sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; }).slice(-8);
+    if (pts.length < 2) return '';
+    var xs = pts.map(function (p) { return ageDays(p.fecha); }), ys = pts.map(function (p) { return p.g; });
+    var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs) || 1, y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    var P = pts.map(function (p, i) { return [4 + 112 * (xs[i] - x0) / ((x1 - x0) || 1), 30 - 26 * (ys[i] - y0) / ((y1 - y0) || 1)]; });
+    var d = P.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(''), e = P[P.length - 1];
+    return '<svg class="spark" viewBox="0 0 120 34" aria-hidden="true"><path d="' + d + ' L' + e[0].toFixed(1) + ' 34 L4 34 Z" class="sa"/><path d="' + d + '" class="sl"/><circle cx="' + e[0].toFixed(1) + '" cy="' + e[1].toFixed(1) + '" r="3.2" class="sd"/></svg>';
+  }
   function vHome() {
-    var p = perfil(), up = live('cita').filter(function (c) { return c.fecha >= today(); }).sort(cmpCita), next = up[0];
-    var h = '<div class="home"><section class="hero"><div class="hd">' + DINO + '</div><div class="hn"><p class="hi">' + greet() + '</p><h1>' + esc(p.nombre || 'Noah') + '</h1><p>' + esc(ageText() || 'Pon su fecha de nacimiento en Ajustes') + '</p></div><button class="gear" data-act="settings" aria-label="Ajustes">' + ICON.gear + '</button></section>';
+    var p = perfil(), up = live('cita').filter(function (c) { return c.fecha >= today(); }).sort(cmpCita), next = up[0], img = foto();
+    var h = '<div class="home"><section class="hero2' + (img ? ' has' : '') + '"' + (img ? ' style="background-image:url(' + img + ')"' : '') + '>' +
+      (img ? '' : '<div class="hph">' + DINO + '<button class="addph" data-act="photo">Poner una foto de ' + esc(p.nombre || 'Noah') + '</button></div>') +
+      '<button class="gear" data-act="settings" aria-label="Ajustes">' + ICON.gear + '</button>' +
+      '<div class="hcap"><p class="hi">' + greet() + '</p><h1>' + esc(p.nombre || 'Noah') + '</h1><p class="age">' + esc(ageText() || 'Pon su fecha de nacimiento en Ajustes') + '</p></div></section>';
     if (!S.recs.length) return h + '<div class="card hi"><h3>Empieza aquí</h3><p class="mut">Pega el texto de importación y aparecerán los datos de Noah.</p><div class="row2"><button class="btn" data-act="import">Importar datos</button></div></div></div>';
     if (next) {
-      h += '<div class="card nx" data-act="editCita" data-id="' + next.id + '"><div class="nxm">' + dateBox(next.fecha) + '<div class="lm"><p class="lbl">Próxima cita · ' + rel(next.fecha) + '</p><p class="strong">' + esc(next.d.titulo) + '</p><p class="mut sm">' + citaLine(next) + '</p></div><a class="ib" href="' + esc(calLink(next)) + '" target="_blank" rel="noopener" aria-label="Añadir a Calendar">' + ICON.cal + '</a></div>';
-      if (up.length > 1) h += '<div class="after" data-act="go" data-v="citas">' + up.slice(1, 3).map(function (c) { return '<span><b>' + fd(c.fecha) + '</b> ' + esc(c.d.titulo) + '</span>'; }).join('') + (up.length > 3 ? '<span class="more">+' + (up.length - 3) + '</span>' : '') + '</div>';
-      h += '</div>';
+      var n = days(today(), next.fecha);
+      h += '<section class="nextc" data-act="editCita" data-id="' + next.id + '"><div class="nxh"><span class="lbl">Lo próximo</span><span class="cd' + (n <= 1 ? ' hot' : '') + '">' + rel(next.fecha) + '</span></div>' +
+        '<div class="nxm">' + dateBox(next.fecha) + '<div class="lm"><p class="ttl">' + esc(next.d.titulo) + '</p><p class="mut sm">' + citaLine(next) + '</p></div><a class="ib" href="' + esc(calLink(next)) + '" target="_blank" rel="noopener" aria-label="Añadir a Calendar">' + ICON.cal + '</a></div>' +
+        (up.length > 1 ? '<div class="after" data-act="go" data-v="citas">' + up.slice(1, 3).map(function (c) { return '<span><b>' + fd(c.fecha) + '</b> ' + esc(c.d.titulo) + '</span>'; }).join('') + (up.length > 3 ? '<span class="more">+' + (up.length - 3) + '</span>' : '') + '</div>' : '') + '</section>';
     }
-    var lw = lastWeight(), nv = nextVac(), tr = activeTreat(), pend = live('pendiente').filter(function (x) { return !x.d.hecho; });
-    h += '<div class="tiles"><div class="tile" data-act="go" data-v="peso"><p class="lbl">Peso' + (lw ? ' · ' + fd(lw.w.fecha) : '') + '</p>' + (lw ? '<p class="big">' + kg(lw.w.g) + '<small>kg</small></p>' + pcChip(ageDays(lw.w.fecha), lw.w.g) + (function () { var st = weightStatus(); return st ? '<p class="sm stl s-' + st.level + '">' + (st.level === 'ok' ? 'Va de lujo' : esc(st.title)) + '</p>' : ''; })() : '<p class="mut">Sin pesadas</p>') + '</div>';
-    h += '<div class="tile" data-act="go" data-v="vacunas"><p class="lbl">Vacunas</p>' + (nv ? '<p class="big">' + esc(nv.g.label) + '</p><p class="mut sm">' + (nv.cita ? 'Cita ' + fd(nv.cita.fecha) + (nv.cita.d.hora ? ' · ' + esc(nv.cita.d.hora) : '') : 'Desde el ' + fd(nv.due)) + '</p><p class="mut sm">' + plural(nv.g.vacs.length, 'vacuna', 'vacunas') + '</p>' : '<p class="mut">Al día</p>') + '</div>';
+    var lw = lastWeight(), nv = nextVac(), tr = activeTreat(), pend = live('pendiente').filter(function (x) { return !x.d.hecho; }), st = weightStatus();
+    h += '<div class="tiles">';
+    h += '<div class="tile" data-act="go" data-v="peso"><p class="lbl">Peso' + (lw ? ' · ' + fd(lw.w.fecha) : '') + '</p>' + (lw ? '<p class="big">' + kg(lw.w.g) + '<small>kg</small></p>' + spark() +
+      '<div class="trow2">' + pcChip(ageDays(lw.w.fecha), lw.w.g) + (st ? '<span class="stl s-' + st.level + '">' + (st.level === 'ok' ? 'Va de lujo' : esc(st.title)) + '</span>' : '') + '</div>' : '<p class="mut sm">Sin pesadas</p>') + '</div>';
+    var vd = nv ? days(today(), nv.cita ? nv.cita.fecha : nv.due) : null;
+    h += '<div class="tile" data-act="go" data-v="vacunas"><p class="lbl">Vacunas</p>' + (nv ? '<p class="big">' + (vd > 0 ? vd + '<small>días</small>' : 'Ya') + '</p><p class="sm strong">' + esc(nv.g.label) + ' · ' + plural(nv.g.vacs.length, 'vacuna', 'vacunas') + '</p><p class="mut sm">' + (nv.cita ? 'Cita ' + fd(nv.cita.fecha) + (nv.cita.d.hora ? ', ' + esc(nv.cita.d.hora) : '') : 'Desde el ' + fd(nv.due)) + '</p>' : '<p class="mut sm">Al día</p>') + '</div>';
     h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Tratamiento</p>' + (tr.length ? tr.slice(0, 2).map(function (t) { return '<p class="strong">' + esc(t.d.nombre.replace(/\s*\(.*\)/, '')) + '</p><p class="mut sm">' + esc(t.d.pauta || '') + '</p>'; }).join('') : '<p class="mut sm">Ninguno ahora</p>') + '</div>';
     h += '<div class="tile" data-act="go" data-v="diario"><p class="lbl">Pendiente</p>' + (pend.length ? '<p class="big">' + pend.length + '</p><p class="mut sm one">' + esc(pend[0].d.texto) + '</p>' : '<p class="mut sm">Nada pendiente, ¡qué gloria!</p>') + '</div></div>';
-    h += '<div class="quick"><button data-act="addPeso">' + ICON.plus + 'Pesada</button><button data-act="newD" data-t="nota">' + ICON.plus + 'Nota</button><button data-act="addCita">' + ICON.plus + 'Cita</button></div></div>';
-    return h;
+    return h + '</div>';
   }
   function gainText(a, b) {
     var g = b.g - a.g, d = days(a.fecha, b.fecha) || 0;
@@ -433,7 +449,7 @@
     openSheet('<div class="sheetf"><h2>Ajustes</h2><p class="mut">Has entrado como <b>' + esc(S.me ? S.me.email : '') + '</b></p>' +
       '<div class="box"><h3>Compartir con tu pareja</h3><p class="mut sm">Escribe su Gmail. Le llegará un correo; después abre la app, entra con ese correo y pulsa «Me han invitado».</p>' +
       '<form id="shf" class="inl"><input name="email" type="email" placeholder="correo@gmail.com" required><button class="btn sm">Invitar</button></form><div id="people" class="mut sm"></div></div>' +
-      '<div class="actions col"><button class="btn ghost" data-act="perfil">Datos de nacimiento</button><button class="btn ghost" data-act="import">Importar datos</button><button class="btn ghost" data-act="reload">Actualizar datos</button><button class="btn ghost danger" data-act="logout">Cerrar sesión</button></div>' +
+      '<div class="actions col"><button class="btn ghost" data-act="photo">' + (foto() ? 'Cambiar la foto' : 'Poner una foto') + '</button><button class="btn ghost" data-act="perfil">Datos de nacimiento</button><button class="btn ghost" data-act="import">Importar datos</button><button class="btn ghost" data-act="reload">Actualizar datos</button><button class="btn ghost danger" data-act="logout">Cerrar sesión</button></div>' +
       '<p class="ver">Noah APP 🦖 · versión ' + esc(root.APP_VERSION) + '</p></div>');
     var f = $('#shf');
     f.onsubmit = function (e) {
@@ -492,6 +508,8 @@
     seg: function (d) { S.seg[d.k] = d.v; render(); },
     close: closeSheet,
     settings: settings, perfil: perfilForm, import: importSheet,
+    photo: function () { $('#phin').click(); },
+    fab: function () { openSheet('<div class="sheetf"><h2>¿Qué apuntamos?</h2><div class="fabg">' + [['addPeso', '⚖️', 'Pesada farmacia'], ['addCons', '🩺', 'Medidas consulta'], ['addCita', '📅', 'Cita'], ['newD', '📝', 'Nota', 'nota'], ['newD', '✅', 'Pendiente', 'pendiente'], ['addVacExtra', '💉', 'Vacuna']].map(function (x) { return '<button data-act="' + x[0] + '"' + (x[3] ? ' data-t="' + x[3] + '"' : '') + '><i>' + x[1] + '</i>' + x[2] + '</button>'; }).join('') + '</div></div>'); },
     reload: function () { closeSheet(); toast('Actualizando…'); refresh().then(function () { toast('Al día'); }); },
     logout: function () { if (!confirm('¿Cerrar sesión en este móvil?')) return; API.signOut(); location.reload(); },
     addCita: function () { citaForm(); }, editCita: function (d) { citaForm(byId(d.id)); },
@@ -524,11 +542,32 @@
     e.preventDefault(); fn(el.dataset, el);
   });
 
+  /* ---------- foto de portada: se comprime y se guarda en vuestro Drive ---------- */
+  var phin = document.createElement('input'); phin.type = 'file'; phin.accept = 'image/*'; phin.id = 'phin'; phin.hidden = true; document.body.appendChild(phin);
+  phin.addEventListener('change', function () {
+    var f = phin.files && phin.files[0]; if (!f) return; closeSheet(); toast('Preparando la foto…');
+    var im = new Image(), url = URL.createObjectURL(f);
+    im.onload = function () {
+      var w = 720, q = 0.78, out = '';
+      for (var k = 0; k < 8; k++) {
+        var sc = Math.min(1, w / im.width), cv = document.createElement('canvas'); cv.width = Math.round(im.width * sc); cv.height = Math.round(im.height * sc);
+        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); out = cv.toDataURL('image/jpeg', q);
+        if (out.length < 46000) break; if (q > 0.55) q -= 0.08; else w = Math.round(w * 0.85);
+      }
+      URL.revokeObjectURL(url); phin.value = '';
+      live('foto').forEach(function (o) { S.recs[S.recs.indexOf(o)] = Object.assign({}, o, { borrado: true }); S.queue.push({ op: 'upd', rec: Object.assign({}, o, { borrado: true, d: {} }) }); });
+      save({ tipo: 'foto', fecha: today(), d: { img: out } }, '¡Qué guapo! Foto puesta');
+    };
+    im.onerror = function () { toast('No he podido leer esa foto'); };
+    im.src = url;
+  });
+
   /* ---------- render ---------- */
   var VIEWS = { home: vHome, citas: vCitas, peso: vPeso, vacunas: vVacunas, diario: vDiario };
   function render() {
     if (!S.ready) return;
     app.innerHTML = '<button id="sync" class="sync" data-act="sync" hidden></button>' + VIEWS[S.view]();
+    var fb = $('#fab'); if (fb) fb.hidden = false;
     nav.hidden = false; nav.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === S.view); });
     paintSync();
   }
