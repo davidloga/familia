@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<rect width="512" height="512" fill="#2F6BFF"/>
-<g transform="translate(30 -6) scale(1.6)"><g transform="translate(8 6)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#2F6BFF"/>
+<circle cx="256" cy="560" r="300" fill="#2459E6"/>
+<g transform="translate(186 72) scale(1.25)"><g transform="translate(8 6)">
 <path d="M62 118 C40 124 22 138 10 162 C34 156 52 150 70 142 Z" fill="#A9C4FF"/>
 
 <path d="M104 40 l7-16 9 12 8-16 9 13 8-14 7 16 z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="4" stroke-linejoin="round"/><ellipse cx="92" cy="118" rx="44" ry="42" fill="#A9C4FF"/>
@@ -16,10 +16,8 @@
 <circle cx="166" cy="48" r="2.6" fill="#14285E"/>
 <circle cx="126" cy="72" r="6" fill="#FF9EB4" opacity=".8"/>
 </g></g>
-<path d="M190 250 q0-70 66-70 q66 0 66 70" fill="none" stroke="#14285E" stroke-width="18" stroke-linecap="round"/>
-<path d="M96 240 h320 l-26 210 q-3 26 -30 26 h-208 q-27 0 -30-26 z" fill="#FFCF33"/>
-<path d="M96 240 h320 l-4 34 h-312 z" fill="#FFB000"/>
-<circle cx="190" cy="250" r="12" fill="#14285E"/><circle cx="322" cy="250" r="12" fill="#14285E"/>
-<path d="M210 360 q46 40 92 0" fill="none" stroke="#14285E" stroke-width="14" stroke-linecap="round" opacity=".0"/>
-<path d="M256 410 l-40-36 a24 24 0 0 1 40-26 a24 24 0 0 1 40 26 z" fill="#2F6BFF"/>
-</svg>
+<rect x="52" y="200" width="408" height="210" rx="40" fill="#14285E"/>
+<text x="256" y="292" text-anchor="middle" font-family="Archivo Black" font-size="92" fill="#FFFFFF" letter-spacing="-2">Compra</text>
+<text x="256" y="388" text-anchor="middle" font-family="Archivo Black" font-size="92" fill="#FFCF33" letter-spacing="-2">Dona</text>
+<circle cx="150" cy="456" r="20" fill="#FFCF33"/><circle cx="362" cy="456" r="20" fill="#FFCF33"/>
+<circle cx="150" cy="456" r="8" fill="#14285E"/><circle cx="362" cy="456" r="8" fill="#14285E"/></svg>

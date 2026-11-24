@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>Lista de la compra · Pa la tetita de Noah</title>
+<title>CompraDona</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#2F6BFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="La compra">
+<meta name="apple-mobile-web-app-title" content="CompraDona">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <div id="welcome" class="welcome"><div class="loading">Un momentito…</div></div>
 <div id="main" hidden>
   <header class="hdr">
-    <div class="tt"><small>Lista de la compra</small><h1>Pa la tetita de Noah</h1></div>
+    <div class="tt"><small>Pa la tetita de Noah</small><h1>Compra<span>Dona</span></h1></div>
     <button id="count" class="count" aria-label="Actualizar"></button>
     <span id="sync" class="sync ok"></span>
   </header>
@@ -42,7 +42,7 @@
 <div id="layer"></div>
 <script src="../config.js?v=1"></script>
 <script src="../src/google.js?v=2"></script>
-<script src="app.js?v=5"></script>
+<script src="app.js?v=6"></script>
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   var c0=navigator.serviceWorker.controller, hadSW=!!(c0&&/\/compra\/sw\.js/.test(c0.scriptURL));
