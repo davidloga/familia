@@ -316,3 +316,33 @@ h1,h2,h3,.big,.dt b,.kg,.trow .strong,.vh .strong,.pcbig,.mini b,.count b{font-f
 .fabg button{display:flex;align-items:center;gap:10px;padding:14px 12px;border-radius:16px;background:var(--sky);font-weight:700;font-size:15px;text-align:left}
 .fabg i{font-style:normal;font-size:22px}
 .nav{border-top:1px solid var(--line)}
+/* 2.1 · Inicio compacto: todo cabe sin scroll */
+.home{gap:8px}
+.hero2{height:150px;border-radius:22px}
+.hcap{left:16px;bottom:12px}
+.hcap .hi{font-size:12px}
+.hcap h1{font-size:30px}
+.hcap .age{font-size:14px;margin-top:0}
+.hph{top:14px;right:62px;flex-direction:row}
+.hph .dino{width:64px;height:64px}
+.nextc{padding:10px 12px;border-radius:20px}
+.nxh{margin-bottom:6px}
+.nextc .dt{width:46px;height:50px;border-radius:13px}
+.nextc .dt b{font-size:22px}
+.ttl{font-size:17px}
+.nextc .ib{width:42px;height:42px;border-radius:13px}
+.after{flex-wrap:nowrap;overflow:hidden;margin-top:8px;padding-top:6px;font-size:12.5px}
+.after span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.after .more{flex:none}
+.tiles{gap:8px}
+.tile{min-height:0;padding:9px 12px;border-radius:18px}
+.tile .lbl{font-size:12px;margin-bottom:0}
+.tile .big{font-size:24px}
+.tile .big small{font-size:12.5px}
+.tile p.sm{font-size:12.5px;line-height:1.3}
+.spark{height:20px;margin:2px 0 4px}
+.trow2{gap:4px 6px}
+.tile .pc{font-size:11.5px;padding:2px 3px 2px 7px}
+.tile .pc i{width:15px;height:15px;font-size:10px}
+.trow2 .stl{font-size:12px}
+.tile .strong{font-size:14.5px}

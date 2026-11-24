@@ -567,7 +567,7 @@
   function render() {
     if (!S.ready) return;
     app.innerHTML = '<button id="sync" class="sync" data-act="sync" hidden></button>' + VIEWS[S.view]();
-    var fb = $('#fab'); if (fb) fb.hidden = false;
+    var fb = $('#fab'); if (!fb) { fb = document.createElement('button'); fb.id = 'fab'; fb.className = 'fab'; fb.dataset.act = 'fab'; fb.setAttribute('aria-label', 'Apuntar algo'); fb.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>'; document.body.appendChild(fb); } fb.hidden = false;
     nav.hidden = false; nav.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === S.view); });
     paintSync();
   }
