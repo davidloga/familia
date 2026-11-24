@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 <div id="welcome" class="welcome"><div class="loading">Un momentito…</div></div>
@@ -32,7 +32,7 @@
     <div class="dockrow">
     <button id="undo" class="undo off" type="button" aria-label="Deshacer"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
     <form id="addf" class="addf" autocomplete="off">
-      <span id="guess" class="guess">🛒</span>
+      <svg id="guess" class="guess" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
       <input id="inp" placeholder="Añade… 2 leche, pan" enterkeyhint="done" autocapitalize="sentences">
       <button class="addb" aria-label="Añadir"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
     </form>
@@ -42,7 +42,7 @@
 <div id="layer"></div>
 <script src="../config.js?v=1"></script>
 <script src="../src/google.js?v=2"></script>
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   var c0=navigator.serviceWorker.controller, hadSW=!!(c0&&/\/compra\/sw\.js/.test(c0.scriptURL));

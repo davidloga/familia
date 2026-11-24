@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '2.5 · 24 nov';
+window.APP_COMPRA_VERSION = '2.6 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
@@ -163,7 +163,7 @@ window.APP_COMPRA_VERSION = '2.5 · 24 nov';
     order().map(function (k) { return CATS[CAT[k].i]; }).forEach(function (c) {
       var its = todo.filter(function (i) { return i.sec === c[0]; }).sort(function (a, b) { return (a.creado || '') < (b.creado || '') ? -1 : 1; });
       if (!its.length) return;
-      h += '<section class="sec" style="--c:' + c[3] + '"><h2><i>' + c[2] + '</i>' + c[1] + '<b>' + its.length + '</b></h2><div class="pills">' + its.map(row).join('') + '</div></section>';
+      h += '<section class="sec"><h2>' + c[1] + '<b>' + its.length + '</b></h2><div class="pills">' + its.map(row).join('') + '</div></section>';
     });
     if (todo.length) h += '<p class="hint">Toca lo que eches al carro · mantén pulsado para editar</p>';
     h += '<p class="hint"><button class="link" data-order>Ordenar secciones como vuestro súper</button></p>';
@@ -174,8 +174,8 @@ window.APP_COMPRA_VERSION = '2.5 · 24 nov';
   }
   function row(i) {
     var c = CATS[(CAT[i.sec] || CAT.otros).i];
-    return '<button class="it" data-id="' + i.id + '" style="--c:' + c[3] + '"><span class="ck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' + esc(i.nombre) + (i.cant ? '<em>' + esc(i.cant) + '</em>' : '') + (i.nota ? '<small class="nt">' + esc(i.nota) + '</small>' : '') +
-      (i.autor ? '<span class="who" style="background:' + whoColor(i.autor) + ';color:' + (whoColor(i.autor) === '#FFCF33' ? '#14285E' : '#fff') + '">' + esc(initials(i.autor)) + '</span>' : '') + '</button>';
+    return '<button class="it" data-id="' + i.id + '"><span class="ck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' + esc(i.nombre) + (i.cant ? '<em>' + esc(i.cant) + '</em>' : '') + (i.nota ? '<small class="nt">' + esc(i.nota) + '</small>' : '') +
+      (i.autor ? '<span class="who">' + esc(initials(i.autor)) + '</span>' : '') + '</button>';
   }
   function paintSync() {
     var d = $('#sync'); if (!d) return;
@@ -186,7 +186,7 @@ window.APP_COMPRA_VERSION = '2.5 · 24 nov';
 
   /* ---------- añadir ---------- */
   var inp = $('#inp'), gEl = $('#guess');
-  inp.addEventListener('input', function () { var parts = inp.value.split(/[,\n]/), t = parts[parts.length - 1]; gEl.textContent = t.trim() ? CAT[secFor(parse(t).nombre)].e : '🛒'; suggest(parts.length > 1 ? t : inp.value); });
+  inp.addEventListener('input', function () { var parts = inp.value.split(/[,\n]/), t = parts[parts.length - 1]; suggest(parts.length > 1 ? t : inp.value); });
   $('#addf').addEventListener('submit', function (e) {
     e.preventDefault();
     var parts = inp.value.split(/[,\n]/).map(function (s) { return s.trim(); }).filter(Boolean); if (!parts.length) return;
@@ -195,7 +195,7 @@ window.APP_COMPRA_VERSION = '2.5 · 24 nov';
     parts.forEach(function (p) { var x = parse(p); if (listed[norm(x.nombre)]) { dup.push(x.nombre); return; } listed[norm(x.nombre)] = 1; recs.push({ nombre: x.nombre, cant: x.cant, nota: x.nota, sec: secFor(x.nombre), hecho: false }); });
     if (recs.length) add(recs);
     if (dup.length) toast(dup.join(', ') + (dup.length > 1 ? ' ya estaban apuntaos' : ' ya estaba apuntao'));
-    inp.value = ''; gEl.textContent = '🛒'; $('#sugs').innerHTML = '';
+    inp.value = ''; $('#sugs').innerHTML = '';
   });
   $('#favs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; add([{ nombre: b.dataset.fav, cant: '', sec: b.dataset.sec, hecho: false }]); });
 
@@ -240,7 +240,7 @@ window.APP_COMPRA_VERSION = '2.5 · 24 nov';
   function recentSheet() {
     var g = gone().slice(0, 30), layer = $('#layer');
     layer.innerHTML = '<div class="scrim" data-x></div><div class="sheet"><button type="button" class="x" data-x aria-label="Cerrar">×</button><h3>Quitados hace poco</h3><p class="meta">Toca uno para devolverlo a la lista.</p><div class="gone">' +
-      (g.length ? g.map(function (i) { var c = CAT[i.sec] || CAT.otros; return '<button data-back="' + i.id + '"><i>' + c.e + '</i><span>' + esc(i.nombre) + (i.cant ? ' <em>' + esc(i.cant) + '</em>' : '') + '</span><small>' + ago(i.mod) + '</small><b>Recuperar</b></button>'; }).join('') : '<p class="meta">No has quitado nada todavía.</p>') + '</div></div>';
+      (g.length ? g.map(function (i) { var c = CAT[i.sec] || CAT.otros; return '<button data-back="' + i.id + '"><span>' + esc(i.nombre) + (i.cant ? ' <em>' + esc(i.cant) + '</em>' : '') + '</span><small>' + ago(i.mod) + '</small><b>Recuperar</b></button>'; }).join('') : '<p class="meta">No has quitado nada todavía.</p>') + '</div></div>';
     layer.classList.add('open');
     layer.onclick = function (e) {
       if (e.target.closest('[data-x]')) return close();
@@ -255,7 +255,7 @@ window.APP_COMPRA_VERSION = '2.5 · 24 nov';
     var layer = $('#layer');
     layer.innerHTML = '<div class="scrim" data-x></div><form class="sheet"><button type="button" class="x" data-x aria-label="Cerrar">×</button><h3>Editar</h3>' +
       '<div class="two"><label class="f"><span>Qué</span><input name="nombre" value="' + esc(r.nombre) + '" required></label><label class="f sm"><span>Cuánto</span><input name="cant" value="' + esc(r.cant) + '" placeholder="2, 1 kg…"></label></div>' +
-      '<label class="f"><span>Nota</span><input name="nota" value="' + esc(r.nota || '') + '" placeholder="La de vainilla, marca blanca…"></label><span class="lbl">Sección</span><div class="secs">' + order().map(function (k) { return CATS[CAT[k].i]; }).map(function (c) { return '<label style="--c:' + c[3] + '"><input type="radio" name="sec" value="' + c[0] + '"' + (r.sec === c[0] ? ' checked' : '') + '><span>' + c[2] + ' ' + c[1] + '</span></label>'; }).join('') + '</div>' +
+      '<label class="f"><span>Nota</span><input name="nota" value="' + esc(r.nota || '') + '" placeholder="La de vainilla, marca blanca…"></label><span class="lbl">Sección</span><div class="secs">' + order().map(function (k) { return CATS[CAT[k].i]; }).map(function (c) { return '<label><input type="radio" name="sec" value="' + c[0] + '"' + (r.sec === c[0] ? ' checked' : '') + '><span>' + c[1] + '</span></label>'; }).join('') + '</div>' +
       '<p class="meta">' + (r.autor ? 'Lo apuntó ' + esc(r.autor) : '') + '</p><div class="acts"><button type="button" class="btn ghost" data-del>Quitar de la lista</button><button class="btn">Guardar</button></div></form>';
     layer.classList.add('open');
     var f = layer.querySelector('form');
@@ -270,7 +270,7 @@ window.APP_COMPRA_VERSION = '2.5 · 24 nov';
     function paint() {
       var o = order();
       layer.innerHTML = '<div class="scrim" data-x></div><div class="sheet"><button type="button" class="x" data-x aria-label="Cerrar">×</button><h3>Orden del súper</h3><p class="meta">Ponlas en el orden en que recorréis el súper. Se guarda para los dos.</p><div class="ord">' +
-        o.map(function (k, n) { var c = CAT[k]; return '<div style="--c:' + c.c + '"><i>' + c.e + '</i><span>' + c.n + '</span><button data-mv="' + n + ',-1" aria-label="Subir"' + (n ? '' : ' disabled') + '>▲</button><button data-mv="' + n + ',1" aria-label="Bajar"' + (n < o.length - 1 ? '' : ' disabled') + '>▼</button></div>'; }).join('') +
+        o.map(function (k, n) { var c = CAT[k]; return '<div><span>' + c.n + '</span><button data-mv="' + n + ',-1" aria-label="Subir"' + (n ? '' : ' disabled') + '>▲</button><button data-mv="' + n + ',1" aria-label="Bajar"' + (n < o.length - 1 ? '' : ' disabled') + '>▼</button></div>'; }).join('') +
         '</div><button class="link" data-reset>Volver al orden típico de Mercadona</button></div>';
       layer.classList.add('open');
     }
@@ -289,7 +289,7 @@ window.APP_COMPRA_VERSION = '2.5 · 24 nov';
     active().forEach(function (i) { inList[norm(i.nombre)] = 1; });
     S.items.forEach(function (i) { if (i.id.charAt(0) === '_') return; var n = norm(i.nombre); if (inList[n] || n.indexOf(k) < 0) return; var c = cnt[n] || (cnt[n] = { n: 0, i: i, pre: n.indexOf(k) === 0 }); c.n++; if ((i.creado || '') > (c.i.creado || '')) c.i = i; });
     var l = Object.keys(cnt).map(function (n) { return cnt[n]; }).sort(function (a, b) { return (b.pre - a.pre) || (b.n - a.n); }).slice(0, 4);
-    box.innerHTML = l.map(function (c) { return '<button type="button" data-sug="' + c.i.id + '"><i>' + CAT[c.i.sec].e + '</i>' + esc(c.i.nombre) + '</button>'; }).join('');
+    box.innerHTML = l.map(function (c) { return '<button type="button" data-sug="' + c.i.id + '"><i>+</i>' + esc(c.i.nombre) + '</button>'; }).join('');
   }
   $('#sugs').addEventListener('mousedown', function (e) { e.preventDefault(); });
   $('#sugs').addEventListener('click', function (e) {
