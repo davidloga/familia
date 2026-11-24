@@ -1,6 +1,6 @@
 /* La compra — funciona sin cobertura en el súper */
-var V = 'compra-9';
-var SHELL = ['./', 'index.html', 'style.css?v=9', 'app.js?v=9', '../config.js?v=1', '../src/google.js?v=2', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
+var V = 'compra-10';
+var SHELL = ['./', 'index.html', 'style.css?v=10', 'app.js?v=10', '../config.js?v=1', '../src/google.js?v=2', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(V).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); })); });
 self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k.indexOf('compra-') === 0 && k !== V && k !== V + '-fonts'; }).map(function (k) { return caches.delete(k); })); }).then(function () { return self.clients.claim(); })); });
 self.addEventListener('fetch', function (e) {

@@ -1,6 +1,6 @@
 /* Lista de la compra · Pa la tetita de Noah
    Vive en el mismo archivo de Google Drive que Noah APP (pestaña «Compra»): lo que apunta uno, lo ve el otro. */
-window.APP_COMPRA_VERSION = '3.0 · 24 nov';
+window.APP_COMPRA_VERSION = '3.1 · 24 nov';
 (function (root) {
   'use strict';
   var G = root.MOCK_API || root.GAPI, ls = G.ls, TAB = 'Compra';
@@ -8,11 +8,20 @@ window.APP_COMPRA_VERSION = '3.0 · 24 nov';
 
   /* Secciones, en el orden en que se recorre el súper */
   var CATS = [
-    ['fruta', 'Fruta y verdura', '🥦', '#13804D'], ['carne', 'Carne y pescado', '🥩', '#C8323A'], ['lacteos', 'Lácteos y huevos', '🧀', '#B27A00'],
-    ['pan', 'Panadería', '🥖', '#A85F1B'], ['despensa', 'Despensa', '🥫', '#5646C4'], ['congelados', 'Congelados', '🧊', '#1478B8'],
-    ['bebidas', 'Bebidas', '🧃', '#B8336F'], ['bebe', 'Pa Noah', '🍼', '#D9487A'], ['higiene', 'Higiene', '🧴', '#0D827D'],
-    ['limpieza', 'Limpieza', '🧽', '#2F6BFF'], ['otros', 'Otros', '🛒', '#5C6890']
+    ['fruta', 'Fruta y verdura', '🥦', 142], ['carne', 'Carne y pescado', '🥩', 4], ['lacteos', 'Lácteos y huevos', '🧀', 44],
+    ['pan', 'Panadería', '🥖', 28], ['despensa', 'Despensa', '🥫', 258], ['congelados', 'Congelados', '🧊', 198],
+    ['bebidas', 'Bebidas', '🧃', 322], ['bebe', 'Pa Noah', '🍼', 292], ['higiene', 'Higiene', '🧴', 166],
+    ['limpieza', 'Limpieza', '🧽', 220], ['otros', 'Otros', '🛒', 230]
   ];
+  var ICONS = 'manzana🍎 pera🍐 platano🍌 naranja🍊 mandarina🍊 limon🍋 uva🍇 fresa🍓 melon🍈 sandia🍉 pina🍍 kiwi🥝 aguacate🥑 guacamole🥑 tomate🍅 lechuga🥬 ensalada🥗 cebolla🧅 ajo🧄 patata🥔 zanahoria🥕 pimiento🫑 pepino🥒 brocoli🥦 champinon🍄 seta🍄 maiz🌽 cereza🍒 melocoton🍑 mango🥭 coco🥥 berenjena🍆 ' +
+    'pollo🍗 pechuga🍗 pavo🍗 jamon🍖 lomo🥓 bacon🥓 beicon🥓 fuet🥓 chorizo🥓 salchichon🥓 salchicha🌭 hamburguesa🍔 carne🥩 filete🥩 ternera🥩 cerdo🥩 pescado🐟 merluza🐟 salmon🐟 atun🐟 bacalao🐟 gamba🦐 langostino🦐 calamar🦑 pulpo🐙 mejillon🦪 ' +
+    'leche🥛 yogur🥛 huevo🥚 clara🥚 queso🧀 mantequilla🧈 nata🥛 pan🍞 baguette🥖 barra🥖 croissant🥐 rosquito🥨 picos🥨 galleta🍪 magdalena🧁 bizcocho🍰 ' +
+    'arroz🍚 pasta🍝 macarron🍝 espagueti🍝 noodle🍜 fideo🍜 caldo🍲 sopa🍲 aceite🫒 aceituna🫒 sal🧂 azucar🍬 harina🌾 cereales🥣 avena🥣 cafe☕ te🍵 cacao🍫 colacao🍫 chocolate🍫 miel🍯 soja🫘 garbanzo🫘 lenteja🫘 alubia🫘 frutos_secos🥜 almendra🥜 nuez🥜 patatas_fritas🍟 bote_patata🍟 ketchup🥫 tomate_frito🥫 lata🥫 ' +
+    'agua💧 cerveza🍺 vino🍷 zumo🧃 refresco🥤 coca🥤 fanta🥤 helado🍦 pizza🍕 hielo🧊 congelado🧊 ' +
+    'panal👶 toallita🧻 biberon🍼 chupete🍼 bebe🍼 papel🧻 champu🧴 gel🧴 crema🧴 desodorante🧴 cepillo🪥 dientes🪥 jabon🧼 detergente🧺 suavizante🧺 norit🧺 lejia🧴 friegasuelos🧹 estropajo🧽 bayeta🧽 basura🗑️ lavavajillas🍽️ pilas🔋 bombilla💡';
+  var ICL = ICONS.split(' ').map(function (w) { var m = /^([a-z_]+)(.+)$/.exec(w); return m ? [m[1].replace(/_/g, ' '), m[2]] : null; }).filter(Boolean).sort(function (x, y) { return y[0].length - x[0].length; });
+  function iconFor(i) { var n = ' ' + norm(i.nombre) + ' '; for (var k = 0; k < ICL.length; k++) if (n.indexOf(ICL[k][0]) >= 0) return ICL[k][1]; return (CAT[i.sec] || CAT.otros).e; }
+  function tint(sec, l) { var h = (CAT[sec] || CAT.otros).c; return 'hsl(' + h + ' ' + (sec === 'otros' ? 14 : 70) + '% ' + l + '%)'; }
   var MERCADONA = ['fruta', 'pan', 'carne', 'lacteos', 'despensa', 'bebidas', 'bebe', 'higiene', 'limpieza', 'congelados', 'otros'];
   var CAT = {}; CATS.forEach(function (c, i) { CAT[c[0]] = { k: c[0], n: c[1], e: c[2], c: c[3], i: i }; });
   var KW = {
@@ -161,11 +170,11 @@ window.APP_COMPRA_VERSION = '3.0 · 24 nov';
     $('#favs').innerHTML = '<span class="fl">Sugerencias</span>' + fv.map(function (f) { return '<button data-fav="' + esc(f.nombre) + '" data-sec="' + f.sec + '"><i>+</i>' + esc(f.nombre) + '</button>'; }).join('');
     $('#favs').hidden = !fv.length;
     var h = '';
-    if (!todo.length) h = '<div class="empty">' + ORANGE + '<b>¡Lista vacía!</b><span>Nevera llena, ¡qué gloria! Apunta abajo lo que vaya haciendo falta.</span></div>';
+    if (!todo.length) h = '<div class="empty"><span class="bigic">🛒</span><b>¡Lista vacía!</b><span>Nevera llena, ¡qué gloria! Apunta abajo lo que vaya haciendo falta.</span></div>';
     order().map(function (k) { return CATS[CAT[k].i]; }).forEach(function (c) {
       var its = todo.filter(function (i) { return i.sec === c[0]; }).sort(function (a, b) { return (a.creado || '') < (b.creado || '') ? -1 : 1; });
       if (!its.length) return;
-      h += '<section class="sec"><h2>' + c[1] + '<b>' + its.length + '</b></h2><div class="pills">' + its.map(row).join('') + '</div></section>';
+      h += '<section class="sec"><h2><i style="background:' + tint(c[0], 90) + '">' + c[2] + '</i>' + c[1] + '<b>' + its.length + '</b></h2><div class="pills">' + its.map(row).join('') + '</div></section>';
     });
     if (todo.length) h += '<p class="hint">Toca lo que eches al carro · mantén pulsado para editar</p>';
     h += '<p class="hint"><button class="link" data-order>Ordenar secciones como vuestro súper</button></p>';
@@ -175,8 +184,8 @@ window.APP_COMPRA_VERSION = '3.0 · 24 nov';
     paintSync();
   }
   function row(i) {
-    var c = CATS[(CAT[i.sec] || CAT.otros).i];
-    return '<button class="it" data-id="' + i.id + '"><span class="ck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' + esc(i.nombre) + (i.cant ? '<em>' + esc(i.cant) + '</em>' : '') + (i.nota ? '<small class="nt">' + esc(i.nota) + '</small>' : '') +
+    return '<button class="it" data-id="' + i.id + '" style="--t:' + tint(i.sec, 95) + ';--t2:' + tint(i.sec, 80) + ';--t3:' + tint(i.sec, 38) + '"><span class="ck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' + esc(i.nombre) +
+      (i.cant ? '<em>' + esc(i.cant) + '</em>' : '') + (i.nota ? '<small class="nt">' + esc(i.nota) + '</small>' : '') +
       (i.autor ? '<span class="who w' + whoIdx(i.autor) + '">' + esc(initials(i.autor)) + '</span>' : '') + '</button>';
   }
   function paintSync() {
@@ -242,7 +251,7 @@ window.APP_COMPRA_VERSION = '3.0 · 24 nov';
   function recentSheet() {
     var g = gone().slice(0, 30), layer = $('#layer');
     layer.innerHTML = '<div class="scrim" data-x></div><div class="sheet"><button type="button" class="x" data-x aria-label="Cerrar">×</button><h3>Quitados hace poco</h3><p class="meta">Toca uno para devolverlo a la lista.</p><div class="gone">' +
-      (g.length ? g.map(function (i) { var c = CAT[i.sec] || CAT.otros; return '<button data-back="' + i.id + '"><span>' + esc(i.nombre) + (i.cant ? ' <em>' + esc(i.cant) + '</em>' : '') + '</span><small>' + ago(i.mod) + '</small><b>Recuperar</b></button>'; }).join('') : '<p class="meta">No has quitado nada todavía.</p>') + '</div></div>';
+      (g.length ? g.map(function (i) { var c = CAT[i.sec] || CAT.otros; return '<button data-back="' + i.id + '"><i>' + (CAT[i.sec] || CAT.otros).e + '</i><span>' + esc(i.nombre) + (i.cant ? ' <em>' + esc(i.cant) + '</em>' : '') + '</span><small>' + ago(i.mod) + '</small><b>Recuperar</b></button>'; }).join('') : '<p class="meta">No has quitado nada todavía.</p>') + '</div></div>';
     layer.classList.add('open');
     layer.onclick = function (e) {
       if (e.target.closest('[data-x]')) return close();
@@ -257,7 +266,7 @@ window.APP_COMPRA_VERSION = '3.0 · 24 nov';
     var layer = $('#layer');
     layer.innerHTML = '<div class="scrim" data-x></div><form class="sheet"><button type="button" class="x" data-x aria-label="Cerrar">×</button><h3>Editar</h3>' +
       '<div class="two"><label class="f"><span>Qué</span><input name="nombre" value="' + esc(r.nombre) + '" required></label><label class="f sm"><span>Cuánto</span><input name="cant" value="' + esc(r.cant) + '" placeholder="2, 1 kg…"></label></div>' +
-      '<label class="f"><span>Nota</span><input name="nota" value="' + esc(r.nota || '') + '" placeholder="La de vainilla, marca blanca…"></label><span class="lbl">Sección</span><div class="secs">' + order().map(function (k) { return CATS[CAT[k].i]; }).map(function (c) { return '<label><input type="radio" name="sec" value="' + c[0] + '"' + (r.sec === c[0] ? ' checked' : '') + '><span>' + c[1] + '</span></label>'; }).join('') + '</div>' +
+      '<label class="f"><span>Nota</span><input name="nota" value="' + esc(r.nota || '') + '" placeholder="La de vainilla, marca blanca…"></label><span class="lbl">Sección</span><div class="secs">' + order().map(function (k) { return CATS[CAT[k].i]; }).map(function (c) { return '<label><input type="radio" name="sec" value="' + c[0] + '"' + (r.sec === c[0] ? ' checked' : '') + '><span>' + c[2] + ' ' + c[1] + '</span></label>'; }).join('') + '</div>' +
       '<p class="meta">' + (r.autor ? 'Lo apuntó ' + esc(r.autor) : '') + '</p><div class="acts"><button type="button" class="btn ghost" data-del>Quitar de la lista</button><button class="btn">Guardar</button></div></form>';
     layer.classList.add('open');
     var f = layer.querySelector('form');
@@ -272,7 +281,7 @@ window.APP_COMPRA_VERSION = '3.0 · 24 nov';
     function paint() {
       var o = order();
       layer.innerHTML = '<div class="scrim" data-x></div><div class="sheet"><button type="button" class="x" data-x aria-label="Cerrar">×</button><h3>Orden del súper</h3><p class="meta">Ponlas en el orden en que recorréis el súper. Se guarda para los dos.</p><div class="ord">' +
-        o.map(function (k, n) { var c = CAT[k]; return '<div><span>' + c.n + '</span><button data-mv="' + n + ',-1" aria-label="Subir"' + (n ? '' : ' disabled') + '>▲</button><button data-mv="' + n + ',1" aria-label="Bajar"' + (n < o.length - 1 ? '' : ' disabled') + '>▼</button></div>'; }).join('') +
+        o.map(function (k, n) { var c = CAT[k]; return '<div><i style="background:' + tint(k, 90) + '">' + c.e + '</i><span>' + c.n + '</span><button data-mv="' + n + ',-1" aria-label="Subir"' + (n ? '' : ' disabled') + '>▲</button><button data-mv="' + n + ',1" aria-label="Bajar"' + (n < o.length - 1 ? '' : ' disabled') + '>▼</button></div>'; }).join('') +
         '</div><button class="link" data-reset>Volver al orden típico de Mercadona</button></div>';
       layer.classList.add('open');
     }
@@ -317,7 +326,7 @@ window.APP_COMPRA_VERSION = '3.0 · 24 nov';
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var cv = document.createElement('canvas'), x = cv.getContext('2d'), W = cv.width = innerWidth * 2, H = cv.height = innerHeight * 2, P = [];
     cv.className = 'confetti'; document.body.appendChild(cv);
-    for (var i = 0; i < n; i++) P.push({ x: W / 2, y: H * 0.85, vx: (Math.random() - 0.5) * 34, vy: -Math.random() * 46 - 18, r: Math.random() * 6 + 5, c: ['#F07A1A', '#2F6B45', '#FFB36B', '#17321F'][i % 4], a: Math.random() * 6 });
+    for (var i = 0; i < n; i++) P.push({ x: W / 2, y: H * 0.85, vx: (Math.random() - 0.5) * 34, vy: -Math.random() * 46 - 18, r: Math.random() * 6 + 5, c: ['#6366F1', '#22C55E', '#F59E0B', '#EC4899'][i % 4], a: Math.random() * 6 });
     var t0 = performance.now();
     (function f(t) { x.clearRect(0, 0, W, H); P.forEach(function (p) { p.vy += 1.6; p.x += p.vx; p.y += p.vy; p.a += 0.2; x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c; x.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); x.restore(); }); if (t - t0 < 1800) requestAnimationFrame(f); else cv.remove(); })(t0);
   }
